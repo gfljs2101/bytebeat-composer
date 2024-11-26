@@ -147,7 +147,9 @@ globalThis.bytebeat = new class {
 					let idx = (drawWidth * (255 - y) + x) << 2;
 					data[idx++] = drawEndBuffer[0];
 					data[idx++] = drawEndBuffer[1];
-					data[idx] = drawEndBuffer[2];
+					data[idx++] = drawEndBuffer[2];
+					data[idx++] = drawEndBuffer[3];
+					data[idx] = drawEndBuffer[4];
 				}
 			}
 		}
@@ -181,7 +183,7 @@ globalThis.bytebeat = new class {
 			if(isCombined || isDiagram) {
 				diagramSize = Math.max(1, 256 >> scale);
 				diagramStart = diagramSize * this.mod(curTime, 1 << scale);
-			} else if(isNaNCurY[0] || isNaNCurY[1]) {
+			} else if(isNaNCurY[0] || isNaNCurY[1] || isNaNCurY[2] || isNaNCurY[3]) {
 				// Error value - filling with red color
 				for(let x = curX; x !== nextX; x = this.mod(x + 1, width)) {
 					for(let y = 0; y < height; ++y) {
@@ -192,23 +194,7 @@ globalThis.bytebeat = new class {
 					}
 				}
 			}
-			// Select mono or stereo drawing
-			if((curY[0] === curY[1] || isNaNCurY[0] && isNaNCurY[1]) && prevY[0] === prevY[1]) {
-				ch = 1;
-				drawDiagramPoint = isCombined ? this.drawSoftPointMono : this.drawPointMono;
-				drawPoint = this.drawPointMono;
-				drawWavePoint = isCombined ? this.drawPointMono : this.drawSoftPointMono;
-			} else {
-				ch = 2;
-				drawDiagramPoint = isCombined ? this.drawSoftPointStereo : this.drawPointStereo;
-				drawPoint = this.drawPointStereo;
-				drawWavePoint = isCombined ? this.drawPointStereo : this.drawSoftPointStereo;
-			}
-			while(ch--) {
-				const curYCh = curY[ch];
-				const colorCh = this.colorChannels;
-				// Diagram drawing
-				if(isCombined || isDiagram) {
+			for (let ch=0; ch<4; ch++) {
 					const isNaNCurYCh = isNaNCurY[ch];
 					const value = (curYCh & 255) / 256;
 					const color = [
