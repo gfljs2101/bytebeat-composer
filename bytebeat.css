@@ -3,9 +3,9 @@
 :root {
 	--button-hover-color: #a8c200;
 	--canvas-border: linear-gradient(#fda757, #fda757) 1;
-	--canvas-button: linear-gradient(to bottom, #ffbb00, #8a8a01);
+	--canvas-button: linear-gradient(to bottom, #bbc200, #c27e00);
 	--canvas-button-color: #c5c8c6;
-	--canvas-button-hover: linear-gradient(to bottom, #bbc200, #c27e00) !important;
+	--canvas-button-hover: linear-gradient(to bottom, #8a8a01, #ffbb00) !important;
 	--code-button: linear-gradient(to bottom, #424242, #171b22);
 	--code-button-hover: linear-gradient(to bottom, #8a4000, #452700);
 	--code-comment: #7d8799;
