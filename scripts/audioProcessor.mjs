@@ -193,16 +193,16 @@ class audioProcessor extends AudioWorkletProcessor {
 				this.getValues = (funcValue, ch) => (this.lastByteValue[ch] = funcValue & 2047) / 1020 - 1;
 				break;
 			case 'logHack':
-				this.getValues = (funcValue, ch) => (this.lastByteValue[ch] = ((Math.log2(Math.abs(funcValue)) * ((funcValue < 0) ? -32 : 32)) & 255)) / 127.5 - 1;
+				this.getValues = (funcValue, ch) => (this.lastByteValue[ch] = (Math.log2(Math.abs(funcValue)) * (((funcValue) < 0) ? -32 : 32)) & 255) / 127.5 - 1;
 				break;
 			case 'logHack2':
-				this.getValues = (funcValue, ch) => (this.lastByteValue[ch] = funcValue == 0 ? 0 : ((((Math.log2(Math.abs(funcValue)) * ((funcValue < 0) ? -16 : 16)) + ((funcValue < 0) ? -127 : 128)) & 255)) / 127.5 - 1;
+				this.getValues = (funcValue, ch) => (this.lastByteValue[ch] = funcValue == 0 ? 128 : (((Math.log2(Math.abs(funcValue)) * (neg ? -16 : 16)) + (neg ? -127 : 128)) & 255)) / 127.5 - 1;
 				break;
 			case 'Sinmode':
-				this.getValues = (funcValue, ch) => (this.lastByteValue[ch] = ((Math.sin(funcValue) * 127))) / 127.5 - 1;
+				this.getValues = (funcValue, ch) => (this.lastByteValue[ch] = (Math.sin(funcValue) * 127)) / 127.5 - 1;
 				break;
 			case 'Sinfmode':
-				this.getValues = (funcValue, ch) => (this.lastByteValue[ch] = ((Math.sin(funcValue * Math.PI / 128) * 32))) / 127.5 - 1;
+				this.getValues = (funcValue, ch) => (this.lastByteValue[ch] = (Math.sin(funcValue * Math.PI / 128) * 32)) / 127.5 - 1;
 				break;
 			default: this.getValues = (funcValue, ch) => (this.lastByteValue[ch] = NaN);
 			}
