@@ -202,7 +202,7 @@ class audioProcessor extends AudioWorkletProcessor {
 				this.getValues = (funcValue, ch) => (this.lastByteValue[ch] = (Math.sin(funcValue) * 127)) / 127.5 - 1;
 				break;
 			case 'Sinfmode':
-				this.getValues = (funcValue, ch) => (this.lastByteValue[ch] = (Math.sin(funcValue * Math.PI / 128) * 32)) / 127.5 - 1;
+				this.getValues = (funcValue, ch) => (this.lastByteValue[ch] = (Math.sin((funcValue)*Math.PI/128) * 127)) / 127.5 - 1;
 				break;
 			default: this.getValues = (funcValue, ch) => (this.lastByteValue[ch] = NaN);
 			}
