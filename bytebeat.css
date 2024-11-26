@@ -40,6 +40,7 @@
 }
 
 html[data-theme="Blue"] {
+	--button-hover-color: #badbff;
 	--canvas-border: linear-gradient(#94beff, #94beff) 1;
 	--canvas-button: linear-gradient(to bottom, #4567b0, #121726);
 	--canvas-button-hover: linear-gradient(to bottom, #5082ee, #26335a) !important;
