@@ -1,46 +1,46 @@
 [
 			{
-				"description": "Cool 3 channel music (used songs.reduce((a,v)=>a+v%256,0)/songs.length method because dollchan and GFLJBeat3 composers dont have 3 channels)",
+				"name": "Cool 3 channel music (used songs.reduce((a,v)=>a+v%256,0)/songs.length method because dollchan and GFLJBeat3 composers dont have 3 channels)",
 				"codeOriginal": "songs=[((t&t>>12|t&t>>8)&t&t>>4),t&t>>9|t&t>>2,t&t>>1], songs.reduce((a,v)=>a+v%256,0)/songs.length",
 				"date": "2024-09-18",
 				"sampleRate": 44100
 			},
 			{
-				"description": "Song by Gabriel Miceli but instead of putting &64, its bitbeat",
+				"name": "Song by Gabriel Miceli but instead of putting &64, its bitbeat",
 				"codeOriginal": "(t&t+t/256)-t*(t>>15)>>6",
 				"date": "2024-09-30",
 				"mode": "Bitbeat"
 			},
 			{
-			"description": "MẼ WĦĚŇ Ï ȘĘĒ FÌŞĦ ĦÅŘÐÇØŘÊ (remix of me when i see fish: by Consistent_Nerve_185",
+			"name": "MẼ WĦĚŇ Ï ȘĘĒ FÌŞĦ ĦÅŘÐÇØŘÊ (remix of me when i see fish: by Consistent_Nerve_185",
 			"children": [{
-				"description": "ORIGINAL",
+				"name": "ORIGINAL",
 				"author": "Consistent_Nerve_185",
 				"url": "https://www.reddit.com/r/bytebeat/comments/1dz6x5q/comment/lcdhecp/",
 				"date": "2024-07-09",
 				"sampleRate": 22050,
 				"codeOriginal": "(((t&t>>12)*(t+(t>>6)^-(3&t>>4)))%(-t>>3)|t>>3|t>>9&t>>13)^(t>>11)"
 			}, {
-				"description": "LEVEL 1",
+				"name": "LEVEL 1",
 				"url": "https://www.reddit.com/r/bytebeat/comments/1dz6x5q/comment/lco1na4/",
 				"date": "2024-07-11",
 				"sampleRate": 22050,
 				"codeOriginal": "(((t&t>>12)*(t+(t>>6)^-(3&t>>4)))%(-t>>3)|t>>3|t>>9&t>>13)^(t>>11)*(t<<8)|t*(t<<12)^(t>>10)|(t>>9)|(t<<7)>>6<<9^t"
 			}, {
-				"description": "LEVEL 2",
+				"name": "LEVEL 2",
 				"date": "2024-09-21",
 				"sampleRate": 88200,
 				"codeOriginal": "t/=5,[(((t&t>>12)*(t+(t>>6)^-(3&t>>4)))%(-t>>3)|t>>3|t>>9&t>>13)^(t>>11)*(t<<8),(800*cbrt(t%8192)|random()*255&-t>>5&t&800*cbrt(t%65536))]"
 			 }
         ]
     }, 			{
-				"description": "C-compatible crude sinewave dubstep",
+				"name": "C-compatible crude sinewave dubstep",
 				"codeOriginal": "(((t*(t&t>>12)*8/11025|0)&16)/8-1)*((t*(t&t>>12)*8/11025|0)*((t*(t&t>>12)*8/11025|0)^15)+(t*(t&t>>12)*8/11025|0)+127)",
 				"date": "2024-11-07",
 				"sampleRate": 44100
 			},
 			{
-				"description": "Funcbeat test (Formatted and Minified are made by AI using https://poe.com/.)",
+				"name": "Funcbeat test (Formatted and Minified are made by AI using https://poe.com/.)",
 				"file": "GFLJS2100 - Funcbeat test.js",
 				"date": "2024-11-08",
 				"fileFormatted": true,
@@ -55,13 +55,13 @@
 				"sampleRate": 22050
 			},
 			{
-				"description": "I made a song with t>> and t<<",
+				"name": "I made a song with t>> and t<<",
 				"codeOriginal": "t>>((t<<(t>>t/(t>>(t>>11)))/512^(40000/(t&16383))|t>>6)^t>>8|t<<61)/8",
 				"date": "2024-11-23",
 				"sampleRate": 44100
 			},
 			{
-				"description": "Cool music using songs.reduce((a,v)=>a+v%256,0)/songs.length and stereo",
+				"name": "Cool music using songs.reduce((a,v)=>a+v%256,0)/songs.length and stereo",
 				"codeOriginal": "a=t&-(-t^t>>8),songs=[a|t%254|t|t>>5,((t<<(t>>8)|t>>(t>>7))<<t)+(t<<(t>>8)|t>>(t>>12))], [songs.reduce((a,v)=>a+v%256,0)/songs.length,(t&t>>1)*((t<<(t>>10))>>(t<<8))]",
 				"date": "2024-11-27",
 				"sampleRate": 22050,
