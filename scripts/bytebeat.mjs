@@ -810,8 +810,8 @@ globalThis.bytebeat = new class {
 			({ hash } = window.location);
 		}
 		let songData;
-		if(hash.startsWith('#v3b64')) {
-			const hashString = atob(hash.substr(6));
+		if(hash.startsWith('#GFLJBeat3-')) {
+			const hashString = atob(hash.substr(11));
 			const dataBuffer = new Uint8Array(hashString.length);
 			for(const i in hashString) {
 				if(Object.prototype.hasOwnProperty.call(hashString, i)) {
