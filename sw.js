@@ -2,7 +2,7 @@ var APP_PREFIX = 'gfljbeat3_';     // Identifier for this app (this needs to be 
 var VERSION = 'version_03';         // Version of the off-line cache (change this value everytime you want to update cache)
 var CACHE_NAME = APP_PREFIX + VERSION;
 var URLS = [                            // Add URL you want to cache in this list.
-  '/GFLJBeat3/',                     // If you have separate JS/CSS files,
+  'https://gfljbeat3.pages.dev',                     // If you have separate JS/CSS files,
   '/GFLJBeat3/index.html',            // add path to those files here
   '/GFLJBeat3/scripts/bytebeat.mjs',
   '/GFLJBeat3/scripts/audioProcessor.mjs',
@@ -21,7 +21,8 @@ var URLS = [                            // Add URL you want to cache in this lis
   '/GFLJBeat3/package-lock.json',
   '/GFLJBeat3/package.json',
   '/GFLJBeat3/rollup.config.js',
-  '/GFLJBeat3/main.js'
+  '/GFLJBeat3/main.js',
+  '/GFLJBeat3/sw.js
   
 ];
 
