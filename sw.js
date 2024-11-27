@@ -21,8 +21,7 @@ var URLS = [                            // Add URL you want to cache in this lis
   '/GFLJBeat3/package-lock.json',
   '/GFLJBeat3/package.json',
   '/GFLJBeat3/rollup.config.js',
-  '/GFLJBeat3/main.js',
-  '/GFLJBeat3/sw.js',
+  '/GFLJBeat3/service-worker.js',
   '/GFLJBeat3/library'
   
 ];
