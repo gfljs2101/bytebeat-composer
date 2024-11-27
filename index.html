@@ -7,19 +7,19 @@
 	<meta name="description" content="Bytebeat player with a collection of many formulas from around the internet">
 	<meta name="author" content="GFLJS2100">
 	<title>Bytebeat composer</title>
-	<link rel="canonical" href="https://gfljbeat3.pages.dev/">
+	<link rel="canonical" href="https://gfljbeat3.pages.dev/" />
 	<link rel="shortcut icon" href="favicon.png">
 	<link rel="stylesheet" type="text/css" href="bytebeat.css?version=2024090100">
 	<link rel="modulepreload" href="./scripts/audioProcessor.mjs?version=2024090100">
 	<script type="module" async src="./scripts/bytebeat.mjs?version=2024090100"></script>
-	<script>
-  // register ServiceWorker, remember to use absolute path!
-  if (navigator.serviceWorker) {
-    navigator.serviceWorker.register('/GFLJBeat3/sw.js', {scope: '/GFLJBeat3/'})
-  }
-  
-  // --- Application code here ---
-	</script>
+  	<script>
+  	    if (navigator.serviceWorker) {
+   	     navigator.serviceWorker.register (
+     	     '/GFLJBeat3/sw.js',
+    	      {scope: '/GFLJBeat3/'}
+	        )
+   	   }
+ 	 </script>
 </head>
 <body>
 	<main id="content">
