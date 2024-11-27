@@ -19,7 +19,7 @@
 	--code-string: #a8ff60;
 	--code-string2: #56b6c2;
 	--code-variable: #c5c8c6;
-	--control-button: linear-gradient(to bottom, #876300, #878300);
+	--control-button: linear-gradient(to bottom, #bbc200, #c27e00);
 	--control-button-active: linear-gradient(to bottom, #c27e00, #bbc200);
 	--control-button-hover: linear-gradient(to bottom, #bbc200, #c27e00);
 	--control-corners: 6px;
