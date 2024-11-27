@@ -1,27 +1,27 @@
-var APP_PREFIX = 'gfljbeat2_';     // Identifier for this app (this needs to be consistent across every cache update)
+var APP_PREFIX = 'gfljbeat3_';     // Identifier for this app (this needs to be consistent across every cache update)
 var VERSION = 'version_03';         // Version of the off-line cache (change this value everytime you want to update cache)
 var CACHE_NAME = APP_PREFIX + VERSION;
 var URLS = [                            // Add URL you want to cache in this list.
-  '/gfljbeat2/',                     // If you have separate JS/CSS files,
-  '/gfljbeat2/index.html',            // add path to those files here
-  '/gfljbeat2/scripts/bytebeat.mjs',
-  '/gfljbeat2/scripts/audioProcessor.mjs',
-  '/gfljbeat2/scripts/codemirror-setup.mjs',
-  '/gfljbeat2/scripts/codemirror.min.mjs',
-  '/gfljbeat2/scripts/jquery.js',
-  '/gfljbeat2/scripts/pako.esm.min.mjs',
-  '/gfljbeat2/.vscode/launch.json',
-  '/gfljbeat2/.github/workflows/jekyll-gh-pages.yml',
-  '/gfljbeat2/.eslintrc.json',
-  '/gfljbeat2/.gitattributes',
-  '/gfljbeat2/.gitignore',
-  '/gfljbeat2/bytebeat.css',
-  '/gfljbeat2/IMG_8941.ico',
-  '/gfljbeat2/menus.js',
-  '/gfljbeat2/package-lock.json',
-  '/gfljbeat2/package.json',
-  '/gfljbeat2/rollup.config.js',
-  '/gfljbeat2/main.js'
+  '/GFLJBeat3/',                     // If you have separate JS/CSS files,
+  '/GFLJBeat3/index.html',            // add path to those files here
+  '/GFLJBeat3/scripts/bytebeat.mjs',
+  '/GFLJBeat3/scripts/audioProcessor.mjs',
+  '/GFLJBeat3/scripts/codemirror-setup.mjs',
+  '/GFLJBeat3/scripts/codemirror.min.mjs',
+  '/GFLJBeat3/scripts/jquery.js',
+  '/GFLJBeat3/scripts/pako.esm.min.mjs',
+  '/GFLJBeat3/.vscode/launch.json',
+  '/GFLJBeat3/.github/workflows/jekyll-gh-pages.yml',
+  '/GFLJBeat3/.eslintrc.json',
+  '/GFLJBeat3/.gitattributes',
+  '/GFLJBeat3/.gitignore',
+  '/GFLJBeat3/bytebeat.css',
+  '/GFLJBeat3/favicon.png',
+  '/GFLJBeat3/menus.js',
+  '/GFLJBeat3/package-lock.json',
+  '/GFLJBeat3/package.json',
+  '/GFLJBeat3/rollup.config.js',
+  '/GFLJBeat3/main.js'
   
 ];
 
