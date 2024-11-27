@@ -62,7 +62,7 @@
 			},
 			{
 				"description": "Cool (3? or stereo) channel music again",
-				"codeOriginal": "a=t&-(-t^t>>8),songs=[a|t%254|t|t>>5,((t<<(t>>8)|t>>(t>>7))<<t)+(t<<(t>>8)|t>>(t>>12))], [songs.reduce((a,v)=>a+v%256,0)/songs.length,(t&t>>1)*((t<<(t>>9))>>(t<<7))]",
+				"codeOriginal": "a=t&-(-t^t>>8),songs=[a|t%254|t|t>>5,((t<<(t>>8)|t>>(t>>7))<<t)+(t<<(t>>8)|t>>(t>>12))], [songs.reduce((a,v)=>a+v%256,0)/songs.length,(t&t>>1)*((t<<(t>>10))>>(t<<8))]",
 				"date": "2024-11-27",
 				"sampleRate": 22050,
 				"mode": "LogHack"
