@@ -1,7 +1,9 @@
 [
 			{
 				"description": "Cool 3 channel music (Play in loghack2)",
-				"codeOriginal": "[((t&t>>12|t&t>>8)&t&t>>4),t&t>>9|t&t>>2,t&t>>1]",
+				"codeOriginal": "songs=[((t&t>>12|t&t>>8)&t&t>>4),t&t>>9|t&t>>2,t&t>>1],
+
+songs.reduce((a,v)=>a+v%256,0)/songs.length",
 				"date": "2024-09-18",
 				"sampleRate": 44100
 			},
