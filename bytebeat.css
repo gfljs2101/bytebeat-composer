@@ -5,7 +5,7 @@
 	--canvas-border: linear-gradient(#fda757, #fda757) 1;
 	--canvas-button: linear-gradient(to bottom, #bbc200, #c27e00);
 	--canvas-button-color: #c5c8c6;
-	--canvas-button-hover: linear-gradient(to bottom, #8a8a01, #ffbb00) !important;
+	--canvas-button-hover: linear-gradient(to bottom, #ffbb00, #8a8a01) !important;
 	--code-button: linear-gradient(to bottom, #424242, #171b22);
 	--code-button-hover: linear-gradient(to bottom, #8a4000, #452700);
 	--code-comment: #7d8799;
@@ -21,7 +21,7 @@
 	--code-variable: #c5c8c6;
 	--control-button: linear-gradient(to bottom, #bbc200, #c27e00);
 	--control-button-active: linear-gradient(to bottom, #8a8a01, #ffbb00);
-	--control-button-hover: linear-gradient(to bottom, #ffbb00, #8a8a01);
+	--control-button-hover: linear-gradient(to bottom, #8a8a01, #ffbb00);
 	--control-corners: 6px;
 	--control-size: 30px;
 	--control-text: linear-gradient(to top, #b88100, #b8b500);
