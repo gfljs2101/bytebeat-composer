@@ -1128,9 +1128,12 @@ globalThis.bytebeat = new class {
 			colorCursor = '#80c0ff';
 			colorDiagram = '#00ffff';
 			break;
-		default:
+		case 'Dollchan':
 			colorCursor = '#80c0ff';
 			colorDiagram = '#0080ff';
+		default:
+			colorCursor = '#fbff00';
+			colorDiagram = '#ffa200';
 		}
 		this.setColorTimeCursor(colorCursor);
 		this.setColorStereo(colorStereo);
