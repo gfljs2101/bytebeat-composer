@@ -1,1 +1,1 @@
-if (navigator.serviceWorker && !navigator.serviceWorker.controller) { navigator.serviceWorker.register('./serviceworker-library.js'); }
+if (navigator.serviceWorker && !navigator.serviceWorker.controller) { navigator.serviceWorker.register('./scripts/serviceworker-library.js'); }
