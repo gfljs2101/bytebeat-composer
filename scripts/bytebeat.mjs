@@ -610,7 +610,7 @@ globalThis.bytebeat = new class {
 		audioRecorder.addEventListener('dataavailable', e => this.audioRecordChunks.push(e.data));
 		audioRecorder.addEventListener('stop', () => {
 			let file, type;
-			const types = ['audio/mp3', 'audio/ogg'];
+			const types = ['audio/mpeg', 'audio/ogg'];
 			const files = ['track.mp3', 'track.ogg'];
 			while((file = files.pop()) && !MediaRecorder.isTypeSupported(type = types.pop())) {
 				if(types.length === 0) {
