@@ -1131,6 +1131,7 @@ globalThis.bytebeat = new class {
 		case 'Dollchan':
 			colorCursor = '#80c0ff';
 			colorDiagram = '#0080ff';
+			break;
 		default:
 			colorCursor = '#fbff00';
 			colorDiagram = '#ffa200';
