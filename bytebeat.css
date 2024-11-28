@@ -480,7 +480,7 @@ button[name="close"] {
 }
 
 #error {
-	color: var(--error);;
+	color: var(--error);
 	font: 14px/14px monospace;
 	word-break: break-all;
 }
