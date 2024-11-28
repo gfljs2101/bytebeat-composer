@@ -24,6 +24,13 @@ addEventListener('fetch',  fetchEvent => {
       catch(error) {
         return caches.match(request);
       }
+    } else (request.headers.get('Accept').includes('application/json')) {
+      try {
+        return await responseFromFetch;
+      }
+      catch(error) {
+        return caches.match(request);
+      }
     } else {
       const responseFromCache = await caches.match(request);
       return responseFromCache || responseFromFetch;
