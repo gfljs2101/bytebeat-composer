@@ -67,5 +67,16 @@
 				"sampleRate": 22050,
 				"stereo": true,
 				"mode": "LogHack"
+			},
+			{
+				"name": "Hard level remixed with floatbeat",
+				"codeOriginal": "t/=4,((songs=[((((t*(t&16384?7:5)*(5-(3&t>>8))>>(3&-t>>(t&4096?2:16))|t>>(t&16384?t&4096?3:4:3))&255)/128-1))/2,((1*((((t*(t&16384?7:5)*(5-(3&t>>8))>>(3&-t>>(t&4096?2:16)))/2&127)+(t>>(t&16384?t&4096?4:6:4)&127)&128)&255)/128-1))], ((songs.reduce((a,v)=>a+v%256,0)/songs.length)*1.5+((((t&4096?random()*255|t>>4:255)&255)/128-1))))+sin(40000/(t&4095)))/3",
+				"date": "2024-11-29",
+				"remix": {
+					"author": "SthephanShi",
+					"name": ""Hard level". My favorite!",
+				},
+				"sampleRate": 32000,
+				"mode": "Floatbeat"
 			}
 ]
