@@ -89,5 +89,20 @@
 				},
 				"sampleRate": 48000,
 				"mode": "Floatbeat"
+			},
+			{
+				"name": "Giraffe Family Life Jungle Simulator Level Failed Sound in Floatbeat Fixed",
+				"codeOriginal": "t?0:a=Array(n=5500).fill(0),ev=(((((sin((t*44100/46000*[1.9,2,2.29,2,1.9,1.9,1.7,1.4974,1.4974,1.4974][t*44100/42000>>13])*PI/32.9/2)||0)))*(((sin((t*44100/46000*[1.9,2,2.29,2,1.9,1.9,1.7,1.4974,1.4974,1.4974][t*44100/42000>>13])*PI/32.9*2)||0))))+(((asin(sin((t*44100/46000*[1.9,2,2.29,2,1.9,1.9,1.7,1.4974,1.4974][t*44100/42000>>13]/4)*PI/32.9)||0))*3.5)/4)+((asin(sin((t*44100/46000*[1.9,2,2.29,2,1.9,1.9,1.7,1.4974,1.4974][t*44100/42000>>13]/2)*PI/32.9)||0))*1.5)/4)/8+a[t%n], a[t%n]=ev/2,ev",
+				"date": "2024-11-30",
+				"remix": {
+					"author": "GFLJS2100",
+					"name": "Giraffe Family Life Jungle Simulator Level Failed Sound in Floatbeat"
+				},
+				"cover": {
+					"name": "Giraffe Family Life Jungle Simulator Level Failed Sound",
+					"url": "https://youtu.be/2os07vbTsj0"
+				},
+				"sampleRate": 48000,
+				"mode": "Floatbeat"
 			}
 ]
