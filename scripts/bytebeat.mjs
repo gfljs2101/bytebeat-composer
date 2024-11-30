@@ -831,6 +831,24 @@ globalThis.bytebeat = new class {
 			} catch(err) {
 				console.error(`Couldn't load data from url: ${ err }`);
 			}
+		} else if(hash.startsWith('#v3b64')) {
+		try {
+			songData = inflateRaw(
+				Uint8Array.from(atob(hash.substring(6)), el => el.charCodeAt()), { to: 'string' });
+			if(songData.startsWith('{')) {
+				songData = JSON.parse(songData);
+				if(songData.formula) { // XXX: old format
+					songData.code = songData.formula;
+				}
+			} else { // XXX: old format
+				songData = { code: songData };
+			}
+		} catch(err) {
+			console.error(`Couldn't load data from url: ${ err }`);
+		}
+	} else {
+		console.error('Couldn\'t load data from url: unrecognized url data');
+	}
 		} else {
 			console.error('Couldn\'t load data from url: unrecognized url data');
 		}
