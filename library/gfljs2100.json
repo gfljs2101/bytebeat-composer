@@ -120,5 +120,13 @@
 				"date": "2024-12-01",
 				"sampleRate": 48000,
 				"mode": "Funcbeat"
+			},
+			{
+				"name": "Using this.*letter* and funcbeat",
+				"file": "GFLJS2100 - Using this.*letter* and funcbeat.js",
+				"date": "2024-12-01",
+				"fileOriginal": true,
+				"sampleRate": 48000,
+				"mode": "Funcbeat"
 			}
 ]
