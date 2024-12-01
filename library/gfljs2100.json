@@ -116,7 +116,7 @@
 			},
 			{
 				"name": "A cool funcbeat music",
-				"codeOriginal": "return (s,sr) => {let t=s*sr t*=32768/sr return (((((sin(s*8|s*2048)))/8+(sin(40000/(t&(t&16384*2?t&16384?t&8192?t&4096?1023:2047:4095:8191:16383)))/2)/2+(sin((((t&16384?random()*255|t>>6:255)+128)*PI/128))/2))*4+(sin(s*16|s*2048)))/4)}",
+				"codeOriginal": "return (s,sr) => {let t=s*sr; t*=32768/sr; return (((((sin(s*8|s*2048)))/8+(sin(40000/(t&(t&16384*2?t&16384?t&8192?t&4096?1023:2047:4095:8191:16383)))/2)/2+(sin((((t&16384?random()*255|t>>6:255)+128)*PI/128))/2))*4+(sin(s*16|s*2048)))/4)}",
 				"date": "2024-12-01",
 				"sampleRate": 48000,
 				"mode": "Funcbeat"
