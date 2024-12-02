@@ -438,11 +438,11 @@ globalThis.bytebeat = new class {
 			}
 			entry += `<br><button class="code-text code-text-original${
 				codeMinified ? ' hidden' : '' }" data-songdata='${ songData }' code-length="${
-				codeOriginal.length }">${ this.escapeHTML(codeOriginal) }</button>`;
+				this.formatBytes(codeOriginal.length) }">${ this.escapeHTML(codeOriginal) }</button>`;
 		}
 		if(codeMinified) {
 			entry += `${ codeOriginal ? '' : '<br>' }<button class="code-text code-text-minified"` +
-				` data-songdata='${ songData }' code-length="${ codeMinified.length }">${
+				` data-songdata='${ songData }' code-length="${ this.formatBytes(codeMinified.length) }">${
 					this.escapeHTML(codeMinified) }</button>`;
 		}
 		if(children) {
