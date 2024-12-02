@@ -12,7 +12,6 @@
 	<link rel="stylesheet" type="text/css" href="bytebeat.css?version=2024090100">
 	<link rel="modulepreload" href="./scripts/audioProcessor.mjs?version=2024090100">
 	<script type="module" async src="./scripts/bytebeat.mjs?version=2024090100"></script>
-	<script>if (navigator.serviceWorker && !navigator.serviceWorker.controller) { navigator.serviceWorker.register('./serviceworker.js'); }</script>
 </head>
 <body>
 	<main id="content">
@@ -308,5 +307,6 @@
 			</symbol>
 		</svg>
 	</div>
+    <script>if (navigator.serviceWorker && !navigator.serviceWorker.controller) { navigator.serviceWorker.register('/serviceworker.js'); }</script>
 </body>
 </html>
