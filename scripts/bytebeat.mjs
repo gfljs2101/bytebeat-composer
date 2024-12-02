@@ -747,7 +747,7 @@ globalThis.bytebeat = new class {
 		minElem?.classList.toggle('hidden');
 		const isMinified = buttonElem.textContent === '–';
 		parentElem.querySelector('.code-length').textContent =
-			`${ (isMinified ? minElem : origElem).getAttribute('code-length') }c`;
+			`${ (isMinified ? minElem : origElem).getAttribute('code-length') }`;
 		buttonElem.title = isMinified ? 'Minified version shown. Click to view the original version.' :
 			'Original version shown. Click to view the minified version.';
 		buttonElem.textContent = isMinified ? '+' : '–';
