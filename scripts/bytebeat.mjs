@@ -403,10 +403,10 @@ globalThis.bytebeat = new class {
 		const songData = codeOriginal || codeMinified || file ? JSON.stringify(songObj) : '';
 		if(codeMinified) {
 			entry += ` <span class="code-length" title="Size in characters">${
-				this.formatBytes(codeMinified) }</span>` + (codeOriginal ? '<button class="code-button code-toggle"' +
+				codeMinified.length }c</span>` + (codeOriginal ? '<button class="code-button code-toggle"' +
 					' title="Minified version shown. Click to view the original version.">+</button>' : '');
 		} else if(codeOriginal) {
-			entry += ` <span class="code-length" title="Size in characters">${ this.formatBytes(codeOriginal) }</span>`;
+			entry += ` <span class="code-length" title="Size in characters">${ codeOriginal.length }c</span>`;
 		}
 		if(file) {
 			let codeBtn = '';
