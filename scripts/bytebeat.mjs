@@ -918,7 +918,7 @@ globalThis.bytebeat = new class {
 				this.sendData({ errorDisplayed: true });
 			}
 			if(data.updateUrl !== true) {
-				this.setCodeSize(this.editorValue.length);
+				this.setCodeSize(this.editorValue);
 			}
 		}
 		if(data.updateUrl === true) {
