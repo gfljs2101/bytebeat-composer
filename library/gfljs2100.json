@@ -128,5 +128,13 @@
 				"fileOriginal": true,
 				"sampleRate": 48000,
 				"mode": "Funcbeat"
+			},
+			{
+				"name": "Cool music using funcbeat and charcodeat",
+				"file": "GFLJS2100 - Cool music using funcbeat and charcodeat.js",
+				"date": "2024-12-02",
+				"fileOriginal": true,
+				"sampleRate": 48000,
+				"mode": "Funcbeat"
 			}
 ]
