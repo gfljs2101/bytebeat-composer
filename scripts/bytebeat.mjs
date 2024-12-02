@@ -1197,7 +1197,7 @@ globalThis.bytebeat = new class {
 		if(this.songData.mode !== 'Bytebeat') {
 			songData.mode = this.songData.mode;
 		}
-		this.setCodeSize(code.length);
+		this.setCodeSize(code);
 		window.location.hash = `#GFLJBeat3-${ btoa(String.fromCharCode.apply(undefined,
 			deflateRaw(JSON.stringify(songData)))).replaceAll('=', '') }`;
 	}
