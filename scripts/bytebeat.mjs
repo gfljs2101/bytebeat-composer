@@ -61,7 +61,6 @@ globalThis.bytebeat = new class {
 			drawMode: 'Combined',
 			drawScale: 5,
 			isSeconds: false,
-			showAllSongs: false,
 			themeStyle: 'Default',
 			volume: .5
 		};
@@ -76,7 +75,6 @@ globalThis.bytebeat = new class {
 		this.playbackSpeed = 1;
 		this.settings = this.defaultSettings;
 		this.songData = { mode: 'Bytebeat', sampleRate: 8000 };
-		this.songs = null;
 		this.init();
 	}
 	get editorValue() {
@@ -102,17 +100,6 @@ globalThis.bytebeat = new class {
 		this.drawGraphics(this.byteSample);
 		if(this.isPlaying) {
 			this.requestAnimationFrame();
-		}
-	}
-	cacheSongs(libArr) {
-		this.songs = new Map();
-		for(let i = 0, iLen = libArr.length; i < iLen; ++i) {
-			const { author } = libArr[i];
-			for(let j = 0, jLen = libArr[i].songs.length; j < jLen; ++j) {
-				const song = libArr[i].songs[j];
-				song.author = author;
-				this.songs.set(song.hash, song);
-			}
 		}
 	}
 	clearCanvas() {
@@ -330,131 +317,155 @@ globalThis.bytebeat = new class {
 		this.containerFixedElem.classList.toggle('container-expanded');
 	}
 	formatBytes(bytes) {
-		if(bytes < 1E4) {
-			return bytes + 'B';
-		}
-		const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
-		return (i ? (bytes / (1024 ** i)).toFixed(2) : bytes) + ['B', 'KB', 'MB', 'GB', 'TB'][i];
+	if(bytes < 1E4) {
+		return bytes + 'B';
 	}
-	generateEntryHTML({
-		author, code, codeFormLen, codeLen, codeMin, codeMinLen, coverName, coverUrl, date, description,
-		drawing, fileForm, fileMin, fileOrig, hash, mode, name, rating, remix, sampleRate, songs, stereo,
-		tags, url
-	}, libName) {
-		const notAllLib = libName !== 'all';
-		if(songs) {
-			let songsStr = '';
-			const len = songs.length;
-			const maxVisible = 10;
-			const needToHide = len - maxVisible;
-			if(notAllLib && len > maxVisible + 3) {
-				songsStr += `<details><summary class="code-button songs-toggle">${
-					needToHide } more bytebeats</summary>`;
-				for(let i = 0; i < len; ++i) {
-					if(i === needToHide) {
-						songsStr += '</details>';
-					}
-					songsStr += this.generateEntryHTML(songs[i], libName);
-				}
-			} else {
-				for(let i = 0; i < len; ++i) {
-					songsStr += this.generateEntryHTML(songs[i], libName);
-				}
-			}
-			return `<details class="songs-block"${
-				notAllLib || this.settings.showAllSongs ? ' open' : ''
-			}><summary class="songs-header"> <b>${ author }</b>${
-				author === 'SthephanShi' ? '<small style="color: #ff0;">dollchan creator</small>' : '' }${
-				len ? `<small> ${ len } song${ len > 1 ? 's' : '' }</small>` : ''
-			}</summary><div class="songs">${ songsStr }</div></details>`;
-		}
-		let str = '';
+	const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+	return (i ? (bytes / (1024 ** i)).toFixed(2) : bytes) + ['B', 'KB', 'MB', 'GB', 'TB'][i];
+}
+	generateLibraryEntry({
+		author, children, codeMinified, codeOriginal, cover, date, description, drawing, file, fileFormatted,
+		fileMinified, fileOriginal, mode, name, remix, sampleRate, starred, stereo, url
+	}) {
+		let entry = '';
 		const noArrayUrl = url && !Array.isArray(url);
 		if(name) {
-			str += url ? `<a href="${ noArrayUrl ? url : url[0] }" target="_blank">${ name }</a>` : name;
+			entry += url ? `<a href="${ noArrayUrl ? url : url[0] }" target="_blank">${ name }</a>` : name;
 		}
 		if(author) {
-			str += ` <span>by ${ name || !noArrayUrl ? `<b>${ author }</b>` :
-				`<a href="${ url }" target="_blank">${ author }</a>` }</span>`;
+			let authorsList = '';
+			const authorsArr = Array.isArray(author) ? author : [author];
+			for(let i = 0, len = authorsArr.length; i < len; ++i) {
+				const authorElem = authorsArr[i];
+				if(typeof authorElem === 'string') {
+					authorsList += name || !noArrayUrl ? '<b>' + authorElem + '</b>':
+						`<a href="${ url }" target="_blank">${ authorElem }</a>`;
+				} else {
+					authorsList += `<a href="${ authorElem[1] }" target="_blank">${ authorElem[0] }</a>`;
+				}
+				if(i < len - 1) {
+					authorsList += ', ';
+				}
+			}
+			entry += ` <span>by ${ authorsList }</span>`;
 		}
-		const songObj = { sampleRate, mode };
 		if(url && (!noArrayUrl || !name && !author)) {
 			if(noArrayUrl) {
-				str += `[<a href="${ url }" target="_blank">link</a>]`;
+				entry += `[<a href="${ url }" target="_blank">link</a>]`;
 			} else {
-				const urlsArr = [];
+				const urlsList = [];
 				for(let i = name ? 1 : 0, len = url.length; i < len; ++i) {
-					urlsArr.push(`<a href="${ url[i] }" target="_blank">link${ i + 1 }</a>`);
+					urlsList.push(`<a href="${ url[i] }" target="_blank">link${ i + 1 }</a>`);
 				}
-				str += ` [${ urlsArr.join(', ') }]`;
+				entry += ` [${ urlsList.join(', ') }]`;
 			}
 		}
-		str += ' <span class="code-info">';
-		if(date) {
-			str += date;
+		if(cover) {
+			const { url: cUrl, name: coverName } = cover;
+			entry += ` <span class="code-remix">(cover of ${ cUrl ?
+				`<a href="${ cUrl }" target="_blank">${ coverName }</a>` :
+				`"${ coverName }"`
+			})</span>`;
 		}
-		if(mode) {
-			str += ' ' + mode;
+		if(remix) {
+			const arr = [];
+			const remixArr = Array.isArray(remix) ? remix : [remix];
+			for(let i = 0, len = remixArr.length; i < len; ++i) {
+				const { url: rUrl, name: remixName, author: rAuthor } = remixArr[i];
+				arr.push(`${ rUrl ? `<a href="${ rUrl }" target="_blank">${
+					remixName || rAuthor }</a>` : `"${ remixName }"`
+				}${ remixName && rAuthor ? ' by ' + rAuthor : '' }`);
+			}
+			entry += ` <span class="code-remix">(remix of ${ arr.join(', ') })</span>`;
 		}
-		str += ` ${ sampleRate }Hz`;
-		if(stereo) {
-			tags.push('stereo');
+
+		if(date || sampleRate || mode || stereo || drawing) {
+			let infoStr = date ? `(${ date })` : '';
+			if(sampleRate) {
+				infoStr += `${ infoStr ? ' ' : '' }${ sampleRate }Hz`;
+			}
+			if(mode) {
+				infoStr += (infoStr ? ' ' : '') + mode;
+			}
+			if(stereo) {
+				infoStr += `${ infoStr ? ' ' : '' }<span class="code-stereo">Stereo</span>`;
+			}
+			if(drawing) {
+				infoStr += `${ infoStr ? ' ' : '' } (${ drawing.mode } mode)`;
+			}
+			entry += ` <span class="code-info">${ infoStr }</span>`;
 		}
+		const songObj = { sampleRate, mode };
 		if(drawing) {
 			songObj.drawMode = drawing.mode;
 			songObj.scale = drawing.scale;
-			tags.push('drawing');
 		}
-		let tagsStr = ('#' + tags.join(' #')).replace(/\s?#(?:256|1k|big)/g, '');
-		if(notAllLib) {
-			tagsStr = tagsStr.replace(/\s?#c/, '');
+		const songData = codeOriginal || codeMinified || file ? JSON.stringify(songObj) : '';
+		if(codeMinified) {
+			entry += ` <span class="code-length" title="Size in characters">${
+				this.formatBytes(codeMinified.length) }</span>` + (codeOriginal ? '<button class="code-button code-toggle"' +
+					' title="Minified version shown. Click to view the original version.">+</button>' : '');
+		} else if(codeOriginal) {
+			entry += ` <span class="code-length" title="Size in characters">${ this.formatBytes(codeOriginal.length) }</span>`;
 		}
-		if(tagsStr) {
-			str += ` <span class="code-tags">${ tagsStr }</span>`;
-		}
-		str += '</span>';
-		if(description) {
-			str += `<div class="code-description">${ description }</div>`;
-		}
-		if(remix) {
-			for(let i = 0, len = remix.length; i < len; ++i) {
-				const { hash: rHash, url: rUrl, name: rName, author: rAuthor } = remix[i];
-				str += '<div class="code-remix"><div class="code-remix-preview"> remix of ' +
-					`<button class="code-button code-remix-load" data-hash="${
-						rHash }" title="Show detailed source information">&gt;</button> <span>${
-						rUrl ? `<a href="${ rUrl }" target="_blank">${ rName || rAuthor }</a>` :
-						`"${ rName }"` }${ rName && rAuthor ? ' by ' + rAuthor : '' }</span></div></div>`;
+		if(file) {
+			let codeBtn = '';
+			if(fileFormatted) {
+				codeBtn += `<button class="code-button code-load code-load-formatted" data-songdata='${
+					songData }' data-code-file="${ file
+				}" title="Click to load and play the formatted code">formatted ${ this.formatBytes(fileFormatted.length) }</button>`;
+			}
+			if(fileOriginal) {
+				codeBtn += `<button class="code-button code-load code-load-original" data-songdata='${
+					songData }' data-code-file="${ file
+				}" title="Click to load and play the original code">original ${ this.formatBytes(fileOriginal.length) }</button>`;
+			}
+			if(fileMinified) {
+				codeBtn += `<button class="code-button code-load code-load-minified" data-songdata='${
+					songData }' data-code-file="${ file
+				}" title="Click to load and play the minified code">minified ${ this.formatBytes(fileMinified.length) }</button>`;
+			}
+			if(codeBtn) {
+				entry += `<div class="code-buttons-container">${ codeBtn }</div>`;
 			}
 		}
-		if(coverName) {
-			str += `<div class="code-cover">cover of ${ coverUrl ?
-				`<a href="${ coverUrl }" target="_blank">${ coverName }</a>` : `"${ coverName }"` }</div>`;
+		if(description) {
+			entry += (entry ? '<br>' : '') + description;
 		}
-		const sData = ` data-songdata='${ JSON.stringify(songObj) }'`;
-		str += '<div class="code-buttons">';
-		if(codeMin || fileMin) {
-			str += `<button class="code-button code-load" data-type="minified"${ sData }${
-				fileMin ? ` data-code-file="${ hash }.js"` : '' }>min ${
-				this.formatBytes(codeMinLen) }</button>`;
+		if(codeOriginal) {
+			if(Array.isArray(codeOriginal)) {
+				codeOriginal = codeOriginal.join('\n');
+			}
+			entry += `<br><button class="code-text code-text-original${
+				codeMinified ? ' hidden' : '' }" data-songdata='${ songData }' code-length="${
+				this.formatBytes(codeOriginal.length) }">${ this.escapeHTML(codeOriginal) }</button>`;
 		}
-		if(code || fileOrig) {
-			str += `<button class="code-button code-load" data-type="original"${ sData }${
-				fileOrig ? `data-code-file="${ hash }.js"` : '' }>orig ${
-				this.formatBytes(codeLen) }</button>`;
+		if(codeMinified) {
+			entry += `${ codeOriginal ? '' : '<br>' }<button class="code-text code-text-minified"` +
+				` data-songdata='${ songData }' code-length="${ this.formatBytes(codeMinified.length) }">${
+					this.escapeHTML(codeMinified) }</button>`;
 		}
-		if(fileForm) {
-			str += `<button class="code-button code-load" data-type="formatted"${ sData } data-code-file="${
-				hash }.js">format ${ this.formatBytes(codeFormLen) }</button>`;
+		if(children) {
+			let childrenStr = '';
+			const len = children.length;
+			if(len > 8) {
+				childrenStr += `<details><summary class="code-button children-toggle">${
+					len - 5 } more bytebeats</summary>`;
+				for(let i = 0; i < len; ++i) {
+					if(i === len - 5) {
+						childrenStr += '</details>';
+					}
+					childrenStr += this.generateLibraryEntry(children[i]);
+				}
+			} else {
+				for(let i = 0; i < len; ++i) {
+					childrenStr += this.generateLibraryEntry(children[i]);
+				}
+			}
+			entry += `<div class="entry-children">${ childrenStr }</div>`;
 		}
-		str += '</div>';
-		if(codeMin) {
-			str += `<button class="code-text code-text-min"${ sData }>${ this.escapeHTML(codeMin) }</button>`;
-		}
-		if(code) {
-			str += `<button class="code-text code-text-orig${ codeMin ? ' hidden' : '' }"${
-				sData }>${ this.escapeHTML(code) }</button>`;
-		}
-		return `<div class="entry${ rating ? ' star-' + rating : '' }" data-hash="${ hash }">${ str }</div>`;
+		return `<div class="${ codeOriginal || codeMinified || file || children ? 'entry' : 'entry-text' }${
+			starred ? ' ' + ['star-1', 'star-2'][starred - 1] : '' }">${ entry }</div>`;
 	}
 	getColor(value) {
 		return [
@@ -508,12 +519,6 @@ globalThis.bytebeat = new class {
 			case 'control-samplerate':
 			case 'control-samplerate-select': this.setSampleRate(+elem.value); break;
 			case 'control-theme-style': this.setThemeStyle(elem.value); break;
-			case 'library-show-all':
-				this.settings.showAllSongs = elem.checked;
-				elem.parentNode.parentNode.querySelectorAll('.songs-block').forEach(
-					node => node.toggleAttribute('open', this.settings.showAllSongs));
-				this.saveSettings();
-				break;
 			}
 			return;
 		case 'click':
@@ -549,8 +554,8 @@ globalThis.bytebeat = new class {
 						elem.hasAttribute('data-songdata') ? JSON.parse(elem.dataset.songdata) : {}));
 				} else if(elem.classList.contains('code-load')) {
 					this.onclickCodeLoadButton(elem);
-				} else if(elem.classList.contains('code-remix-load')) {
-					this.onclickRemixLoadButton(elem);
+				} else if(elem.classList.contains('code-toggle') && !elem.getAttribute('disabled')) {
+					this.onclickCodeToggleButton(elem);
 				} else if(elem.classList.contains('library-header')) {
 					this.onclickLibraryHeader(elem);
 				} else if(elem.parentNode.classList.contains('library-header')) {
@@ -572,12 +577,8 @@ globalThis.bytebeat = new class {
 			}
 			return;
 		case 'mouseover':
-			if(elem.classList.contains('code-load')) {
-				elem.title = `Click to play the ${ elem.dataset.type } code`;
-			} else if(elem.classList.contains('code-text')) {
+			if(elem.classList.contains('code-text')) {
 				elem.title = 'Click to play this code';
-			} else if(elem.classList.contains('songs-header')) {
-				elem.title = 'Click to show/hide the songs';
 			}
 			return;
 		}
@@ -599,13 +600,13 @@ globalThis.bytebeat = new class {
 	initAfterDom() {
 		this.initElements();
 		this.parseUrl();
-		loadScript('./scripts/codemirror.min.mjs?version=2024111602');
+		loadScript('./scripts/codemirror.min.mjs?version=2024090100');
 	}
 	async initAudioContext() {
 		this.audioCtx = new AudioContext({ latencyHint: 'balanced', sampleRate: 48000 });
 		this.audioGain = new GainNode(this.audioCtx);
 		this.audioGain.connect(this.audioCtx.destination);
-		await this.audioCtx.audioWorklet.addModule('./scripts/audioProcessor.mjs?version=2024111602');
+		await this.audioCtx.audioWorklet.addModule('./scripts/audioProcessor.mjs?version=2024090100');
 		this.audioWorkletNode = new AudioWorkletNode(this.audioCtx, 'audioProcessor',
 			{ outputChannelCount: [2] });
 		this.audioWorkletNode.port.addEventListener('message', e => this.receiveData(e.data));
@@ -616,8 +617,8 @@ globalThis.bytebeat = new class {
 		audioRecorder.addEventListener('dataavailable', e => this.audioRecordChunks.push(e.data));
 		audioRecorder.addEventListener('stop', () => {
 			let file, type;
-			const types = ['audio/webm', 'audio/ogg'];
-			const files = ['track.webm', 'track.ogg'];
+			const types = ['audio/mpeg', 'audio/ogg'];
+			const files = ['track.mp3', 'track.ogg'];
 			while((file = files.pop()) && !MediaRecorder.isTypeSupported(type = types.pop())) {
 				if(types.length === 0) {
 					console.error('Recording is not supported in this browser!');
@@ -730,21 +731,26 @@ globalThis.bytebeat = new class {
 		return ((a % b) + b) % b;
 	}
 	async onclickCodeLoadButton(buttonElem) {
-		if(buttonElem.dataset.codeFile) {
-			buttonElem.insertAdjacentHTML('beforeend',
-				'<svg class="loading-wait"><use xlink:href="#symbol-wait"></use></svg>');
-			const waitElem = buttonElem.lastChild;
-			const response = await fetch(this.pathFiles + buttonElem.dataset.type +
-				'/' + buttonElem.dataset.codeFile);
-			this.loadCode(Object.assign(JSON.parse(buttonElem.dataset.songdata),
-				{ code: await response.text() }));
-			waitElem.remove();
-		} else {
-			const codeTextElem = buttonElem.parentNode.parentNode
-				.querySelector(buttonElem.dataset.type === 'minified' ? '.code-text-min' : '.code-text-orig');
-			this.loadCode(Object.assign(JSON.parse(buttonElem.dataset.songdata),
-				{ code: codeTextElem.innerText }));
-		}
+		const response = await fetch(`library/${
+			buttonElem.classList.contains('code-load-formatted') ? 'formatted' :
+			buttonElem.classList.contains('code-load-minified') ? 'minified' :
+			buttonElem.classList.contains('code-load-original') ? 'original' : ''
+		}/${ buttonElem.dataset.codeFile }`, { cache: 'no-cache' });
+		this.loadCode(Object.assign(JSON.parse(buttonElem.dataset.songdata),
+			{ code: await response.text() }));
+	}
+	onclickCodeToggleButton(buttonElem) {
+		const parentElem = buttonElem.parentNode;
+		const origElem = parentElem.querySelector('.code-text-original');
+		const minElem = parentElem.querySelector('.code-text-minified');
+		origElem?.classList.toggle('hidden');
+		minElem?.classList.toggle('hidden');
+		const isMinified = buttonElem.textContent === '–';
+		parentElem.querySelector('.code-length').textContent =
+			`${ (isMinified ? minElem : origElem).getAttribute('code-length') }c`;
+		buttonElem.title = isMinified ? 'Minified version shown. Click to view the original version.' :
+			'Original version shown. Click to view the minified version.';
+		buttonElem.textContent = isMinified ? '+' : '–';
 	}
 	async onclickLibraryHeader(headerElem) {
 		const containerElem = headerElem.nextElementSibling;
@@ -758,44 +764,20 @@ globalThis.bytebeat = new class {
 		const response = await fetch(`./library/${ containerElem.id.replace('library-', '') }.json`,
 			{ cache: 'no-cache' });
 		const { status } = response;
+		waitElem.classList.add('hidden');
 		if(status !== 200 && status !== 304) {
 			state.remove('loaded');
-			containerElem.innerHTML = `<div class="loading-error">Unable to load the library: ${ status } ${
-				response.statusText }</div>`;
-			waitElem.classList.add('hidden');
+			containerElem.innerHTML = `<div class="loading-error">Unable to load the library: ${
+				status } ${ response.statusText }</div>`;
 			return;
 		}
-		containerElem.innerHTML = libName !== 'all' ? '' :
-			`<label><input type="checkbox" id="library-show-all"${
-				this.settings.showAllSongs ? ' checked' : '' }> Show all songs</label>`;
-		let libHTML = '';
-		const libArr = await response.json();
-		for(let i = 0, len = libArr.length; i < len; ++i) {
-			libHTML += this.generateEntryHTML(libArr[i], libName);
+		containerElem.innerHTML = '';
+		let libraryHTML = '';
+		const libraryArr = await response.json();
+		for(let i = 0, len = libraryArr.length; i < len; ++i) {
+			libraryHTML += `<div class="entry-top">${ this.generateLibraryEntry(libraryArr[i]) }</div>`;
 		}
-		if(!this.songs && libName === 'all') {
-			this.cacheSongs(libArr);
-		}
-		containerElem.insertAdjacentHTML('beforeend', libHTML);
-		waitElem.classList.add('hidden');
-	}
-	async onclickRemixLoadButton(elem) {
-		const parentElem = elem.parentNode;
-		if(parentElem.nextSibling) {
-			parentElem.nextSibling.remove();
-			elem.nextElementSibling.style.display = 'inline';
-			return;
-		}
-		if(!this.songs) {
-			elem.insertAdjacentHTML('beforeend',
-				'<svg class="loading-wait"><use xlink:href="#symbol-wait"></use></svg>');
-			const response = await fetch(this.pathJSON + 'all.json');
-			this.cacheSongs(await response.json());
-			elem.lastChild.remove();
-		}
-		parentElem.insertAdjacentHTML('afterend',
-			this.generateEntryHTML(this.songs.get(elem.dataset.hash), 'all'));
-		elem.nextElementSibling.style.display = 'none';
+		containerElem.insertAdjacentHTML('beforeend', libraryHTML);
 	}
 	oninputCounter(e) {
 		if(e.key === 'Enter') {
@@ -835,31 +817,26 @@ globalThis.bytebeat = new class {
 			({ hash } = window.location);
 		}
 		let songData;
-		if(hash.startsWith('#4')) {
-			const dataArr = Uint8Array.from(atob(hash.substring(2)), el => el.charCodeAt());
+		if (hash.startsWith('#v3b64') || hash.startsWith('#GFLJBeat3-')) {
 			try {
-				songData = {
-					mode: ['Bytebeat', 'Signed Bytebeat', 'Floatbeat', 'Funcbeat'][dataArr[0]],
-					sampleRate: new DataView(dataArr.buffer).getFloat32(1, 1),
-					code: inflateRaw(new Uint8Array(dataArr.buffer, 5), { to: 'string' })
-				};
-			} catch(err) {
-				console.error(`Couldn't load data from url: ${ err }`);
-			}
-		} else if(hash.startsWith('#v3b64')) {
-			try {
-				songData = inflateRaw(
-					Uint8Array.from(atob(hash.substring(6)), el => el.charCodeAt()), { to: 'string' });
-				if(!songData.startsWith('{')) { // XXX: old format
+				const hashString = hash.startsWith('#GFLJBeat3-') ? atob(hash.slice(11)) : atob(hash.slice(6));
+				const dataBuffer = new Uint8Array(hashString.length);
+				for (const i in hashString) {
+					if (Object.prototype.hasOwnProperty.call(hashString, i)) {
+						dataBuffer[i] = hashString.charCodeAt(i);
+					}
+				}
+				songData = inflateRaw(dataBuffer, { to: 'string' });
+				if (!songData.startsWith('{')) { // XXX: old format
 					songData = { code: songData, sampleRate: 8000, mode: 'Bytebeat' };
 				} else {
 					songData = JSON.parse(songData);
-					if(songData.formula) { // XXX: old format
+					if (songData.formula) { // XXX: old format
 						songData.code = songData.formula;
 					}
 				}
-			} catch(err) {
-				console.error(`Couldn't load data from url: ${ err }`);
+			} catch (err) {
+				console.error(`Couldn't load data from url: ${err}`);
 			}
 		} else {
 			console.error('Couldn\'t load data from url: unrecognized url data');
@@ -1077,11 +1054,10 @@ globalThis.bytebeat = new class {
 		buttonElem.title = `Play ${ isFast ? `fast ${ direction } x${ speed } speed` : direction }`;
 	}
 	setSampleRate(sampleRate, isSendData = true) {
-		if(!sampleRate || !isFinite(sampleRate) ||
-			// Float32 limit
-			(sampleRate = Number(parseFloat(Math.abs(sampleRate)).toFixed(2))) > 3.4028234663852886E+38
-		) {
+		if(!sampleRate || !isFinite(sampleRate)) {
 			sampleRate = 8000;
+		} else if(sampleRate < 0) {
+			sampleRate = -sampleRate;
 		}
 		switch(sampleRate) {
 		case 8000:
@@ -1136,6 +1112,10 @@ globalThis.bytebeat = new class {
 		let colorCursor, colorDiagram;
 		let colorStereo = 1; // Red=0, Green=1, Blue=2
 		switch(value) {
+		case 'Blue':
+			colorCursor = '#80c0ff';
+			colorDiagram = '#0080ff';
+			break;
 		case 'Cake':
 			colorCursor = '#40ffff';
 			colorDiagram = '#ff00ff';
@@ -1159,9 +1139,13 @@ globalThis.bytebeat = new class {
 			colorCursor = '#80c0ff';
 			colorDiagram = '#00ffff';
 			break;
-		default:
+		case 'Dollchan':
 			colorCursor = '#80c0ff';
 			colorDiagram = '#0080ff';
+			break;
+		default:
+			colorCursor = '#fbff00';
+			colorDiagram = '#ffa200';
 		}
 		this.setColorTimeCursor(colorCursor);
 		this.setColorStereo(colorStereo);
@@ -1206,13 +1190,15 @@ globalThis.bytebeat = new class {
 	}
 	updateUrl() {
 		const code = this.editorValue;
+		const songData = { code };
+		if(this.songData.sampleRate !== 8000) {
+			songData.sampleRate = this.songData.sampleRate;
+		}
+		if(this.songData.mode !== 'Bytebeat') {
+			songData.mode = this.songData.mode;
+		}
 		this.setCodeSize(code);
-		const codeArr = deflateRaw(code);
-		// First byte is mode, next 4 bytes is sampleRate, then the code
-		const outputArr = new Uint8Array(5 + codeArr.length);
-		outputArr[0] = ['Bytebeat', 'Signed Bytebeat', 'Floatbeat', 'Funcbeat'].indexOf(this.songData.mode);
-		outputArr.set(new Uint8Array(new Float32Array([this.songData.sampleRate]).buffer), 1);
-		outputArr.set(codeArr, 5);
-		window.location.hash = '4' + btoa(String.fromCharCode.apply(null, outputArr)).replaceAll('=', '');
+		window.location.hash = `#GFLJBeat3-${ btoa(String.fromCharCode.apply(undefined,
+			deflateRaw(JSON.stringify(songData)))).replaceAll('=', '') }`;
 	}
 }();
