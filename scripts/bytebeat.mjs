@@ -755,8 +755,8 @@ globalThis.bytebeat = new class {
 		state.add('loaded');
 		const waitElem = headerElem.querySelector('.loading-wait');
 		waitElem.classList.remove('hidden');
-		const libName = containerElem.id.replace('library-', '');
-		const response = await fetch(this.pathJSON + libName + '.json');
+		const response = await fetch(`./library/${ containerElem.id.replace('library-', '') }.json`,
+			{ cache: 'no-cache' });
 		const { status } = response;
 		if(status !== 200 && status !== 304) {
 			state.remove('loaded');
