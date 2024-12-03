@@ -136,5 +136,13 @@
 				"fileOriginal": true,
 				"sampleRate": 48000,
 				"mode": "Funcbeat"
+			},
+			{
+				"name": "Funcbeat music with kick and sin(t|t)",
+				"file": "GFLJS2100 - Funcbeat music with kick and sin(t|t).js",
+				"date": "2024-12-03",
+				"fileOriginal": true,
+				"sampleRate": 48000,
+				"mode": "Funcbeat"
 			}
 ]
