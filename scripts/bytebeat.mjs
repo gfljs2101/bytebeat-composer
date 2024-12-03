@@ -73,8 +73,6 @@ globalThis.bytebeat = new class {
 		this.isNeedClear = false;
 		this.isPlaying = false;
 		this.isRecording = false;
-		this.pathFiles = './library/formatted/, ./library/minified/, ./library/original/';
-		this.pathJSON = './library/';
 		this.playbackSpeed = 1;
 		this.settings = this.defaultSettings;
 		this.songData = { mode: 'Bytebeat', sampleRate: 8000 };
@@ -757,7 +755,7 @@ globalThis.bytebeat = new class {
 		state.add('loaded');
 		const waitElem = headerElem.querySelector('.loading-wait');
 		waitElem.classList.remove('hidden');
-		const libName = containerElem.id.replace('library-', '');
+		const libName = await fetch(`./library/${ containerElem.id.replace('library-', '') }.json`
 		const response = await fetch(this.pathJSON + libName + '.json');
 		const { status } = response;
 		if(status !== 200 && status !== 304) {
