@@ -61,6 +61,7 @@ globalThis.bytebeat = new class {
 			drawMode: 'Combined',
 			drawScale: 5,
 			isSeconds: false,
+			showAllSongs: false,
 			themeStyle: 'Default',
 			volume: .5
 		};
@@ -72,9 +73,12 @@ globalThis.bytebeat = new class {
 		this.isNeedClear = false;
 		this.isPlaying = false;
 		this.isRecording = false;
+		this.pathFiles = './data/songs/';
+		this.pathJSON = './data/json/';
 		this.playbackSpeed = 1;
 		this.settings = this.defaultSettings;
 		this.songData = { mode: 'Bytebeat', sampleRate: 8000 };
+		this.songs = null;
 		this.init();
 	}
 	get editorValue() {
@@ -100,6 +104,17 @@ globalThis.bytebeat = new class {
 		this.drawGraphics(this.byteSample);
 		if(this.isPlaying) {
 			this.requestAnimationFrame();
+		}
+	}
+	cacheSongs(libArr) {
+		this.songs = new Map();
+		for(let i = 0, iLen = libArr.length; i < iLen; ++i) {
+			const { author } = libArr[i];
+			for(let j = 0, jLen = libArr[i].songs.length; j < jLen; ++j) {
+				const song = libArr[i].songs[j];
+				song.author = author;
+				this.songs.set(song.hash, song);
+			}
 		}
 	}
 	clearCanvas() {
@@ -317,13 +332,13 @@ globalThis.bytebeat = new class {
 		this.containerFixedElem.classList.toggle('container-expanded');
 	}
 	formatBytes(bytes) {
-	if(bytes < 1E4) {
-		return bytes + 'B';
+		if(bytes < 1E4) {
+			return bytes + 'B';
+		}
+		const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+		return (i ? (bytes / (1024 ** i)).toFixed(2) : bytes) + ['B', 'KB', 'MB', 'GB', 'TB'][i];
 	}
-	const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
-	return (i ? (bytes / (1024 ** i)).toFixed(2) : bytes) + ['B', 'KB', 'MB', 'GB', 'TB'][i];
-}
-	generateLibraryEntry({
+	generateEntryHTML({
 		author, code, codeFormLen, codeLen, codeMin, codeMinLen, coverName, coverUrl, date, description,
 		drawing, fileForm, fileMin, fileOrig, hash, mode, name, rating, remix, sampleRate, songs, stereo,
 		tags, url
@@ -495,6 +510,12 @@ globalThis.bytebeat = new class {
 			case 'control-samplerate':
 			case 'control-samplerate-select': this.setSampleRate(+elem.value); break;
 			case 'control-theme-style': this.setThemeStyle(elem.value); break;
+			case 'library-show-all':
+				this.settings.showAllSongs = elem.checked;
+				elem.parentNode.parentNode.querySelectorAll('.songs-block').forEach(
+					node => node.toggleAttribute('open', this.settings.showAllSongs));
+				this.saveSettings();
+				break;
 			}
 			return;
 		case 'click':
@@ -530,8 +551,8 @@ globalThis.bytebeat = new class {
 						elem.hasAttribute('data-songdata') ? JSON.parse(elem.dataset.songdata) : {}));
 				} else if(elem.classList.contains('code-load')) {
 					this.onclickCodeLoadButton(elem);
-				} else if(elem.classList.contains('code-toggle') && !elem.getAttribute('disabled')) {
-					this.onclickCodeToggleButton(elem);
+				} else if(elem.classList.contains('code-remix-load')) {
+					this.onclickRemixLoadButton(elem);
 				} else if(elem.classList.contains('library-header')) {
 					this.onclickLibraryHeader(elem);
 				} else if(elem.parentNode.classList.contains('library-header')) {
@@ -553,8 +574,12 @@ globalThis.bytebeat = new class {
 			}
 			return;
 		case 'mouseover':
-			if(elem.classList.contains('code-text')) {
+			if(elem.classList.contains('code-load')) {
+				elem.title = `Click to play the ${ elem.dataset.type } code`;
+			} else if(elem.classList.contains('code-text')) {
 				elem.title = 'Click to play this code';
+			} else if(elem.classList.contains('songs-header')) {
+				elem.title = 'Click to show/hide the songs';
 			}
 			return;
 		}
@@ -576,13 +601,13 @@ globalThis.bytebeat = new class {
 	initAfterDom() {
 		this.initElements();
 		this.parseUrl();
-		loadScript('./scripts/codemirror.min.mjs?version=2024090100');
+		loadScript('./scripts/codemirror.min.mjs?version=2024111602');
 	}
 	async initAudioContext() {
 		this.audioCtx = new AudioContext({ latencyHint: 'balanced', sampleRate: 48000 });
 		this.audioGain = new GainNode(this.audioCtx);
 		this.audioGain.connect(this.audioCtx.destination);
-		await this.audioCtx.audioWorklet.addModule('./scripts/audioProcessor.mjs?version=2024090100');
+		await this.audioCtx.audioWorklet.addModule('./scripts/audioProcessor.mjs?version=2024111602');
 		this.audioWorkletNode = new AudioWorkletNode(this.audioCtx, 'audioProcessor',
 			{ outputChannelCount: [2] });
 		this.audioWorkletNode.port.addEventListener('message', e => this.receiveData(e.data));
@@ -593,8 +618,8 @@ globalThis.bytebeat = new class {
 		audioRecorder.addEventListener('dataavailable', e => this.audioRecordChunks.push(e.data));
 		audioRecorder.addEventListener('stop', () => {
 			let file, type;
-			const types = ['audio/mpeg', 'audio/ogg'];
-			const files = ['track.mp3', 'track.ogg'];
+			const types = ['audio/webm', 'audio/ogg'];
+			const files = ['track.webm', 'track.ogg'];
 			while((file = files.pop()) && !MediaRecorder.isTypeSupported(type = types.pop())) {
 				if(types.length === 0) {
 					console.error('Recording is not supported in this browser!');
@@ -707,26 +732,21 @@ globalThis.bytebeat = new class {
 		return ((a % b) + b) % b;
 	}
 	async onclickCodeLoadButton(buttonElem) {
-		const response = await fetch(`library/${
-			buttonElem.classList.contains('code-load-formatted') ? 'formatted' :
-			buttonElem.classList.contains('code-load-minified') ? 'minified' :
-			buttonElem.classList.contains('code-load-original') ? 'original' : ''
-		}/${ buttonElem.dataset.codeFile }`, { cache: 'no-cache' });
-		this.loadCode(Object.assign(JSON.parse(buttonElem.dataset.songdata),
-			{ code: await response.text() }));
-	}
-	onclickCodeToggleButton(buttonElem) {
-		const parentElem = buttonElem.parentNode;
-		const origElem = parentElem.querySelector('.code-text-original');
-		const minElem = parentElem.querySelector('.code-text-minified');
-		origElem?.classList.toggle('hidden');
-		minElem?.classList.toggle('hidden');
-		const isMinified = buttonElem.textContent === '–';
-		parentElem.querySelector('.code-length').textContent =
-			`${ (isMinified ? minElem : origElem).getAttribute('code-length') }`;
-		buttonElem.title = isMinified ? 'Minified version shown. Click to view the original version.' :
-			'Original version shown. Click to view the minified version.';
-		buttonElem.textContent = isMinified ? '+' : '–';
+		if(buttonElem.dataset.codeFile) {
+			buttonElem.insertAdjacentHTML('beforeend',
+				'<svg class="loading-wait"><use xlink:href="#symbol-wait"></use></svg>');
+			const waitElem = buttonElem.lastChild;
+			const response = await fetch(this.pathFiles + buttonElem.dataset.type +
+				'/' + buttonElem.dataset.codeFile);
+			this.loadCode(Object.assign(JSON.parse(buttonElem.dataset.songdata),
+				{ code: await response.text() }));
+			waitElem.remove();
+		} else {
+			const codeTextElem = buttonElem.parentNode.parentNode
+				.querySelector(buttonElem.dataset.type === 'minified' ? '.code-text-min' : '.code-text-orig');
+			this.loadCode(Object.assign(JSON.parse(buttonElem.dataset.songdata),
+				{ code: codeTextElem.innerText }));
+		}
 	}
 	async onclickLibraryHeader(headerElem) {
 		const containerElem = headerElem.nextElementSibling;
@@ -737,23 +757,47 @@ globalThis.bytebeat = new class {
 		state.add('loaded');
 		const waitElem = headerElem.querySelector('.loading-wait');
 		waitElem.classList.remove('hidden');
-		const response = await fetch(`./library/${ containerElem.id.replace('library-', '') }.json`,
-			{ cache: 'no-cache' });
+		const libName = containerElem.id.replace('library-', '');
+		const response = await fetch(this.pathJSON + libName + '.json');
 		const { status } = response;
-		waitElem.classList.add('hidden');
 		if(status !== 200 && status !== 304) {
 			state.remove('loaded');
-			containerElem.innerHTML = `<div class="loading-error">Unable to load the library: ${
-				status } ${ response.statusText }</div>`;
+			containerElem.innerHTML = `<div class="loading-error">Unable to load the library: ${ status } ${
+				response.statusText }</div>`;
+			waitElem.classList.add('hidden');
 			return;
 		}
-		containerElem.innerHTML = '';
-		let libraryHTML = '';
-		const libraryArr = await response.json();
-		for(let i = 0, len = libraryArr.length; i < len; ++i) {
-			libraryHTML += `<div class="entry-top">${ this.generateLibraryEntry(libraryArr[i]) }</div>`;
+		containerElem.innerHTML = libName !== 'all' ? '' :
+			`<label><input type="checkbox" id="library-show-all"${
+				this.settings.showAllSongs ? ' checked' : '' }> Show all songs</label>`;
+		let libHTML = '';
+		const libArr = await response.json();
+		for(let i = 0, len = libArr.length; i < len; ++i) {
+			libHTML += this.generateEntryHTML(libArr[i], libName);
 		}
-		containerElem.insertAdjacentHTML('beforeend', libraryHTML);
+		if(!this.songs && libName === 'all') {
+			this.cacheSongs(libArr);
+		}
+		containerElem.insertAdjacentHTML('beforeend', libHTML);
+		waitElem.classList.add('hidden');
+	}
+	async onclickRemixLoadButton(elem) {
+		const parentElem = elem.parentNode;
+		if(parentElem.nextSibling) {
+			parentElem.nextSibling.remove();
+			elem.nextElementSibling.style.display = 'inline';
+			return;
+		}
+		if(!this.songs) {
+			elem.insertAdjacentHTML('beforeend',
+				'<svg class="loading-wait"><use xlink:href="#symbol-wait"></use></svg>');
+			const response = await fetch(this.pathJSON + 'all.json');
+			this.cacheSongs(await response.json());
+			elem.lastChild.remove();
+		}
+		parentElem.insertAdjacentHTML('afterend',
+			this.generateEntryHTML(this.songs.get(elem.dataset.hash), 'all'));
+		elem.nextElementSibling.style.display = 'none';
 	}
 	oninputCounter(e) {
 		if(e.key === 'Enter') {
@@ -793,26 +837,31 @@ globalThis.bytebeat = new class {
 			({ hash } = window.location);
 		}
 		let songData;
-		if (hash.startsWith('#v3b64') || hash.startsWith('#GFLJBeat3-')) {
+		if(hash.startsWith('#4')) {
+			const dataArr = Uint8Array.from(atob(hash.substring(2)), el => el.charCodeAt());
 			try {
-				const hashString = hash.startsWith('#GFLJBeat3-') ? atob(hash.slice(11)) : atob(hash.slice(6));
-				const dataBuffer = new Uint8Array(hashString.length);
-				for (const i in hashString) {
-					if (Object.prototype.hasOwnProperty.call(hashString, i)) {
-						dataBuffer[i] = hashString.charCodeAt(i);
-					}
-				}
-				songData = inflateRaw(dataBuffer, { to: 'string' });
-				if (!songData.startsWith('{')) { // XXX: old format
+				songData = {
+					mode: ['Bytebeat', 'Signed Bytebeat', 'Floatbeat', 'Funcbeat'][dataArr[0]],
+					sampleRate: new DataView(dataArr.buffer).getFloat32(1, 1),
+					code: inflateRaw(new Uint8Array(dataArr.buffer, 5), { to: 'string' })
+				};
+			} catch(err) {
+				console.error(`Couldn't load data from url: ${ err }`);
+			}
+		} else if(hash.startsWith('#v3b64')) {
+			try {
+				songData = inflateRaw(
+					Uint8Array.from(atob(hash.substring(6)), el => el.charCodeAt()), { to: 'string' });
+				if(!songData.startsWith('{')) { // XXX: old format
 					songData = { code: songData, sampleRate: 8000, mode: 'Bytebeat' };
 				} else {
 					songData = JSON.parse(songData);
-					if (songData.formula) { // XXX: old format
+					if(songData.formula) { // XXX: old format
 						songData.code = songData.formula;
 					}
 				}
-			} catch (err) {
-				console.error(`Couldn't load data from url: ${err}`);
+			} catch(err) {
+				console.error(`Couldn't load data from url: ${ err }`);
 			}
 		} else {
 			console.error('Couldn\'t load data from url: unrecognized url data');
@@ -1030,10 +1079,11 @@ globalThis.bytebeat = new class {
 		buttonElem.title = `Play ${ isFast ? `fast ${ direction } x${ speed } speed` : direction }`;
 	}
 	setSampleRate(sampleRate, isSendData = true) {
-		if(!sampleRate || !isFinite(sampleRate)) {
+		if(!sampleRate || !isFinite(sampleRate) ||
+			// Float32 limit
+			(sampleRate = Number(parseFloat(Math.abs(sampleRate)).toFixed(2))) > 3.4028234663852886E+38
+		) {
 			sampleRate = 8000;
-		} else if(sampleRate < 0) {
-			sampleRate = -sampleRate;
 		}
 		switch(sampleRate) {
 		case 8000:
@@ -1088,10 +1138,6 @@ globalThis.bytebeat = new class {
 		let colorCursor, colorDiagram;
 		let colorStereo = 1; // Red=0, Green=1, Blue=2
 		switch(value) {
-		case 'Blue':
-			colorCursor = '#80c0ff';
-			colorDiagram = '#0080ff';
-			break;
 		case 'Cake':
 			colorCursor = '#40ffff';
 			colorDiagram = '#ff00ff';
@@ -1115,13 +1161,9 @@ globalThis.bytebeat = new class {
 			colorCursor = '#80c0ff';
 			colorDiagram = '#00ffff';
 			break;
-		case 'Dollchan':
+		default:
 			colorCursor = '#80c0ff';
 			colorDiagram = '#0080ff';
-			break;
-		default:
-			colorCursor = '#fbff00';
-			colorDiagram = '#ffa200';
 		}
 		this.setColorTimeCursor(colorCursor);
 		this.setColorStereo(colorStereo);
@@ -1166,15 +1208,13 @@ globalThis.bytebeat = new class {
 	}
 	updateUrl() {
 		const code = this.editorValue;
-		const songData = { code };
-		if(this.songData.sampleRate !== 8000) {
-			songData.sampleRate = this.songData.sampleRate;
-		}
-		if(this.songData.mode !== 'Bytebeat') {
-			songData.mode = this.songData.mode;
-		}
 		this.setCodeSize(code);
-		window.location.hash = `#GFLJBeat3-${ btoa(String.fromCharCode.apply(undefined,
-			deflateRaw(JSON.stringify(songData)))).replaceAll('=', '') }`;
+		const codeArr = deflateRaw(code);
+		// First byte is mode, next 4 bytes is sampleRate, then the code
+		const outputArr = new Uint8Array(5 + codeArr.length);
+		outputArr[0] = ['Bytebeat', 'Signed Bytebeat', 'Floatbeat', 'Funcbeat'].indexOf(this.songData.mode);
+		outputArr.set(new Uint8Array(new Float32Array([this.songData.sampleRate]).buffer), 1);
+		outputArr.set(codeArr, 5);
+		window.location.hash = '4' + btoa(String.fromCharCode.apply(null, outputArr)).replaceAll('=', '');
 	}
 }();
