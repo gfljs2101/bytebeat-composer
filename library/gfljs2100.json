@@ -148,6 +148,8 @@
 			{
 				"name": "Micro Mouse Bytebeat OS",
 				"file": "GFLJS2100 - Micro Mouse Bytebeat OS.js",
+				"description": "Set it to Diagram and zoom out 8 times. Made by image to bytebeat tool.",
+				"drawing": { "mode": "Diagram", "scale": 8 },
 				"date": "2024-12-04",
 				"fileOriginal": true,
 				"sampleRate": 22050
