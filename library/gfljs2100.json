@@ -144,5 +144,12 @@
 				"fileOriginal": true,
 				"sampleRate": 48000,
 				"mode": "Funcbeat"
+			},
+			{
+				"name": "Micro Mouse Bytebeat OS",
+				"file": "GFLJS2100 - Micro Mouse Bytebeat OS.js",
+				"date": "2024-12-04",
+				"fileOriginal": true,
+				"sampleRate": 22050
 			}
 ]
