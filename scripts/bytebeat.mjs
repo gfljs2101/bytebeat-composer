@@ -324,8 +324,9 @@ globalThis.bytebeat = new class {
 	return (i ? (bytes / (1024 ** i)).toFixed(2) : bytes) + ['B', 'KB', 'MB', 'GB', 'TB'][i];
 }
 	generateLibraryEntry({
-		author, children, codeMinified, codeOriginal, cover, date, description, drawing, file, fileFormatted,
-		fileMinified, fileOriginal, mode, name, remix, sampleRate, starred, stereo, url
+		author, code, codeFormLen, codeLen, codeMin, codeMinLen, coverName, coverUrl, date, description,
+		drawing, fileForm, fileMin, fileOrig, hash, mode, name, rating, remix, sampleRate, songs, stereo,
+		tags, url
 	}) {
 		let entry = '';
 		const noArrayUrl = url && !Array.isArray(url);
