@@ -328,6 +328,32 @@ globalThis.bytebeat = new class {
 		drawing, fileForm, fileMin, fileOrig, hash, mode, name, rating, remix, sampleRate, songs, stereo,
 		tags, url
 	}) {
+		if(songs) {
+			let songsStr = '';
+			const len = songs.length;
+			const maxVisible = 10;
+			const needToHide = len - maxVisible;
+			if(notAllLib && len > maxVisible + 3) {
+				songsStr += `<details><summary class="code-button songs-toggle">${
+					needToHide } more bytebeats</summary>`;
+				for(let i = 0; i < len; ++i) {
+					if(i === needToHide) {
+						songsStr += '</details>';
+					}
+					songsStr += this.generateEntryHTML(songs[i], libName);
+				}
+			} else {
+				for(let i = 0; i < len; ++i) {
+					songsStr += this.generateEntryHTML(songs[i], libName);
+				}
+			}
+			return `<details class="songs-block"${
+				notAllLib || this.settings.showAllSongs ? ' open' : ''
+			}><summary class="songs-header"> <b>${ author }</b>${
+				author === 'SthephanShi' ? '<small style="color: #ff0;">dollchan creator</small>' : '' }${
+				len ? `<small> ${ len } song${ len > 1 ? 's' : '' }</small>` : ''
+			}</summary><div class="songs">${ songsStr }</div></details>`;
+		}
 		let entry = '';
 		const noArrayUrl = url && !Array.isArray(url);
 		if(name) {
