@@ -102,17 +102,6 @@ globalThis.bytebeat = new class {
 			this.requestAnimationFrame();
 		}
 	}
-	cacheSongs(libArr) {
-		this.songs = new Map();
-		for(let i = 0, iLen = libArr.length; i < iLen; ++i) {
-			const { author } = libArr[i];
-			for(let j = 0, jLen = libArr[i].songs.length; j < jLen; ++j) {
-				const song = libArr[i].songs[j];
-				song.author = author;
-				this.songs.set(song.hash, song);
-			}
-		}
-	}
 	clearCanvas() {
 		this.canvasCtx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 	}
