@@ -536,15 +536,18 @@ button[name="close"] {
 /* ==[ Library ] ========================================================================================== */
 
 .code-button {
-	margin: 1px 0 0 5px;
+	margin: 2px 0;
 	padding: 2px 5px;
 	border: none;
 	border-radius: 3px;
 	background-image: var(--code-button);
 	color: #ced5e1;
-	font: var(--font-size)/var(--font-size) sans-serif;
 	white-space: nowrap;
 	cursor: pointer;
+}
+
+.code-button:active {
+	opacity: .6;
 }
 
 .code-button:hover {
@@ -552,37 +555,76 @@ button[name="close"] {
 	color: var(--button-hover-color);
 }
 
-.code-button.children-toggle {
-	margin: 8px 0 5px 0;
+.code-button.songs-toggle {
+	margin: 4px 0;
 	padding: 5px 10px;
 	width: fit-content;
+	font: var(--font-size)/var(--font-size) sans-serif;
 }
 
-.code-buttons-container {
-	display: inline-block;
+.code-button > .loading-wait {
+	width: 14px;
+	height: 14px;
 }
 
-.code-length, .code-info {
-	color: gray;
-	cursor: default;
+.code-buttons {
+	font: 90%/var(--font-size) sans-serif;
 }
 
-.code-remix {
+.code-buttons > .code-load {
+	border-left: 1px solid var(--code-button-border);
+	border-radius: 0;
+}
+
+.code-buttons > :first-child {
+	border: none;
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+.code-buttons > :last-child {
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+.code-cover, .code-remix {
+	border-left: 2px solid #666;
+}
+
+.code-cover, .code-remix-preview {
+	padding-left: 4px;
 	font-size: 90%;
 }
 
-.code-stereo {
-	color: #008040;
+.code-description {
+	font-size: 90%;
+}
+
+.code-info {
+	color: gray;
+	cursor: default;
+	font-size: 90%;
+}
+
+.code-remix > .entry {
+	margin-bottom: 4px;
+	padding: 0 4px;
+	border: 1px solid #444;
+	border-left: none;
+}
+
+.code-tags {
+	color: var(--code-tags);
 }
 
 .code-text {
 	display: inline-block;
 	margin: 0;
-	padding: 0;
-	border: none;
-	color: #ffcc53;
-	background: none;
-	font: var(--font-size)/16px monospace;
+	padding: 3px;
+	border: 1px dotted #555;
+	color: #dfc86b;
+	background-color: #00000060;
+	font: 90%/100% monospace;
 	text-align: left;
 	text-decoration: none;
 	white-space: pre-wrap;
@@ -597,31 +639,16 @@ button[name="close"] {
 }
 
 .entry {
-	position: relative;
-}
-
-.entry-children .entry:not(:last-child) {
+	width: fit-content;
 	margin-bottom: 4px;
-}
-
-.entry-children .entry::before {
-	content: "\25CF";
-	position: absolute;
-	top: 2px;
-	left: -11px;
-	color: #555;
-	font-size: 12px;
-}
-
-.entry-children .entry > .entry-children {
-	margin-left: 11px;
+	padding: 3px 4px 3px 6px;
+	border: 1px solid #2a2a2a;
+	background-color: var(--entry);
 }
 
 .entry.star-1::before, .entry.star-2::before {
 	content: "\2605";
-	position: absolute;
-	top: 0;
-	left: -13px;
+	margin-right: 2px;
 	font-size: var(--font-size);
 }
 
@@ -630,15 +657,7 @@ button[name="close"] {
 }
 
 .entry.star-2::before {
-	color: var(--entry-star);
-}
-
-.entry-top {
-	padding: 6px 4px 8px 16px;
-}
-
-.entry-top:not(:first-child) {
-	border-top: 1px solid #404040;
+	color: #ff0;
 }
 
 .library-content {
@@ -646,11 +665,16 @@ button[name="close"] {
 	border-right: 1px solid #444;
 	border-left: 1px solid #444;
 	border-radius: 3px;
-	background: #0a0a0a;
+	background-color: #0a0a0a;
 }
 
 .library-content[open] {
 	border-bottom: 1px solid #444;
+}
+
+.library-content[open] > .library-header, .library-header:hover, .library-header:focus-visible {
+	background-image: var(--library-header-hover);
+	color: var(--library-header-hover-color);
 }
 
 .library-header {
@@ -658,11 +682,6 @@ button[name="close"] {
 	border-radius: 3px;
 	background-image: var(--library-header);
 	cursor: pointer;
-}
-
-.library-header:hover, .library-header:focus-visible {
-	background-image: var(--library-header-hover);
-	color: var(--library-header-hover-color);
 }
 
 .library-header > h1 {
@@ -683,9 +702,33 @@ button[name="close"] {
 .loading-wait {
 	width: 16px;
 	height: 16px;
-	margin-left: 6px;
+	margin-left: 4px;
 	vertical-align: top;
 	animation: wait-anim 1s linear infinite;
+}
+
+.songs {
+	margin-top: 4px;
+	padding: 2px 0 0 6px;
+}
+
+.songs-block {
+	padding: 0 4px 4px 0;
+	border-image: var(--entry-border) 10%;
+	border-top: 2px solid;
+	background: none;
+}
+
+.songs-header {
+	display: inline list-item;
+	padding: 1px 6px 2px 8px;
+	border-radius: 0 0 8px 0;
+	background-color: var(--code-author);
+	cursor: pointer;
+}
+
+.songs-header > small {
+	margin-left: 8px;
 }
 
 /* ==[ Controls ] ========================================================================================= */
