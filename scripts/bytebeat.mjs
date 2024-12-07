@@ -330,103 +330,142 @@ globalThis.bytebeat = new class {
 		let entry = '';
 		const noArrayUrl = url && !Array.isArray(url);
 		if(name) {
-			str += url ? `<a href="${ noArrayUrl ? url : url[0] }" target="_blank">${ name }</a>` : name;
+			entry += url ? `<a href="${ noArrayUrl ? url : url[0] }" target="_blank">${ name }</a>` : name;
 		}
 		if(author) {
-			str += ` <span>by ${ name || !noArrayUrl ? `<b>${ author }</b>` :
-				`<a href="${ url }" target="_blank">${ author }</a>` }</span>`;
+			let authorsList = '';
+			const authorsArr = Array.isArray(author) ? author : [author];
+			for(let i = 0, len = authorsArr.length; i < len; ++i) {
+				const authorElem = authorsArr[i];
+				if(typeof authorElem === 'string') {
+					authorsList += name || !noArrayUrl ? '<b>' + authorElem + '</b>':
+						`<a href="${ url }" target="_blank">${ authorElem }</a>`;
+				} else {
+					authorsList += `<a href="${ authorElem[1] }" target="_blank">${ authorElem[0] }</a>`;
+				}
+				if(i < len - 1) {
+					authorsList += ', ';
+				}
+			}
+			entry += ` <span>by ${ authorsList }</span>`;
 		}
-		const songObj = { sampleRate, mode };
 		if(url && (!noArrayUrl || !name && !author)) {
 			if(noArrayUrl) {
-				str += `[<a href="${ url }" target="_blank">link</a>]`;
+				entry += `[<a href="${ url }" target="_blank">link</a>]`;
 			} else {
-				const urlsArr = [];
+				const urlsList = [];
 				for(let i = name ? 1 : 0, len = url.length; i < len; ++i) {
-					urlsArr.push(`<a href="${ url[i] }" target="_blank">link${ i + 1 }</a>`);
+					urlsList.push(`<a href="${ url[i] }" target="_blank">link${ i + 1 }</a>`);
 				}
-				str += ` [${ urlsArr.join(', ') }]`;
+				entry += ` [${ urlsList.join(', ') }]`;
 			}
 		}
-		str += ' <span class="code-info">';
-		if(date) {
-			str += date;
+		if(cover) {
+			const { url: cUrl, name: coverName } = cover;
+			entry += ` <span class="code-remix">(cover of ${ cUrl ?
+				`<a href="${ cUrl }" target="_blank">${ coverName }</a>` :
+				`"${ coverName }"`
+			})</span>`;
 		}
-		if(mode) {
-			str += ' ' + mode;
-		}
-		str += ` ${ sampleRate }Hz`;
-		const outTags = [];
-		let i = tags.length;
-		while(i--) {
-			switch(tags[i]) {
-			case 'c':
-				if(notAllLib) {
-					continue;
-				}
-				break;
-			case '1k':
-			case '256':
-			case 'big': continue;
+		if(remix) {
+			const arr = [];
+			const remixArr = Array.isArray(remix) ? remix : [remix];
+			for(let i = 0, len = remixArr.length; i < len; ++i) {
+				const { url: rUrl, name: remixName, author: rAuthor } = remixArr[i];
+				arr.push(`${ rUrl ? `<a href="${ rUrl }" target="_blank">${
+					remixName || rAuthor }</a>` : `"${ remixName }"`
+				}${ remixName && rAuthor ? ' by ' + rAuthor : '' }`);
 			}
-			outTags.push(tags[i]);
+			entry += ` <span class="code-remix">(remix of ${ arr.join(', ') })</span>`;
+		}
 
+		if(date || sampleRate || mode || stereo || drawing) {
+			let infoStr = date ? `(${ date })` : '';
+			if(sampleRate) {
+				infoStr += `${ infoStr ? ' ' : '' }${ sampleRate }Hz`;
+			}
+			if(mode) {
+				infoStr += (infoStr ? ' ' : '') + mode;
+			}
+			if(stereo) {
+				infoStr += `${ infoStr ? ' ' : '' }<span class="code-stereo">Stereo</span>`;
+			}
+			if(drawing) {
+				infoStr += `${ infoStr ? ' ' : '' } (${ drawing.mode } mode)`;
+			}
+			entry += ` <span class="code-info">${ infoStr }</span>`;
 		}
-		if(stereo) {
-			outTags.push('stereo');
-		}
+		const songObj = { sampleRate, mode };
 		if(drawing) {
 			songObj.drawMode = drawing.mode;
 			songObj.scale = drawing.scale;
-			outTags.push('drawing');
 		}
-		if(outTags.length) {
-			str += ` <span class="code-tags">#${ outTags.join(' #') }</span>`;
+		const songData = codeOriginal || codeMinified || file ? JSON.stringify(songObj) : '';
+		if(codeMinified) {
+			entry += ` <span class="code-length" title="Size in characters">${
+				this.formatBytes(codeMinified.length) }</span>` + (codeOriginal ? '<button class="code-button code-toggle"' +
+					' title="Minified version shown. Click to view the original version.">+</button>' : '');
+		} else if(codeOriginal) {
+			entry += ` <span class="code-length" title="Size in characters">${ this.formatBytes(codeOriginal.length) }</span>`;
 		}
-		str += '</span>';
-		if(this.isAdmin) {
-			str += ` <a href="bytebeat.php?editsong_request&hash=${ hash }" target="_blank">Edit</a>`;
-		}
-		if(description) {
-			str += `<div class="code-description">${ description }</div>`;
-		}
-		if(remix) {
-			for(let i = 0, len = remix.length; i < len; ++i) {
-				const { hash: rHash, url: rUrl, name: rName, author: rAuthor } = remix[i];
-				str += '<div class="code-remix"><div class="code-remix-preview"> remix of ' +
-					`<button class="code-button code-remix-load" data-hash="${
-						rHash }" title="Show detailed source information">&gt;</button> <span>${
-						rUrl ? `<a href="${ rUrl }" target="_blank">${ rName || rAuthor }</a>` :
-						`"${ rName }"` }${ rName && rAuthor ? ' by ' + rAuthor : '' }</span></div></div>`;
+		if(file) {
+			let codeBtn = '';
+			if(fileFormatted) {
+				codeBtn += `<button class="code-button code-load code-load-formatted" data-songdata='${
+					songData }' data-code-file="${ file
+				}" title="Click to load and play the formatted code">formatted</button>`;
+			}
+			if(fileOriginal) {
+				codeBtn += `<button class="code-button code-load code-load-original" data-songdata='${
+					songData }' data-code-file="${ file
+				}" title="Click to load and play the original code">original</button>`;
+			}
+			if(fileMinified) {
+				codeBtn += `<button class="code-button code-load code-load-minified" data-songdata='${
+					songData }' data-code-file="${ file
+				}" title="Click to load and play the minified code">minified</button>`;
+			}
+			if(codeBtn) {
+				entry += `<div class="code-buttons-container">${ codeBtn }</div>`;
 			}
 		}
-		if(coverName) {
-			str += `<div class="code-cover">cover of ${ coverUrl ?
-				`<a href="${ coverUrl }" target="_blank">${ coverName }</a>` : `"${ coverName }"` }</div>`;
+		if(description) {
+			entry += (entry ? '<br>' : '') + description;
 		}
-		const sData = ` data-songdata='${ JSON.stringify(songObj) }'`;
-		str += '<div class="code-buttons">';
-		if(codeMin || fileMin) {
-			str += `<button class="code-button code-load" data-type="minified"${ sData }${
-				fileMin ? ` data-code-file="${ hash }.js"` : '' }>min ${ formatBytes(codeMinLen) }</button>`;
+		if(codeOriginal) {
+			if(Array.isArray(codeOriginal)) {
+				codeOriginal = codeOriginal.join('\n');
+			}
+			entry += `<br><button class="code-text code-text-original${
+				codeMinified ? ' hidden' : '' }" data-songdata='${ songData }' code-length="${
+				this.formatBytes(codeOriginal.length) }">${ this.escapeHTML(codeOriginal) }</button>`;
 		}
-		if(code || fileOrig) {
-			str += `<button class="code-button code-load" data-type="original"${ sData }${
-				fileOrig ? `data-code-file="${ hash }.js"` : '' }>orig ${ formatBytes(codeLen) }</button>`;
+		if(codeMinified) {
+			entry += `${ codeOriginal ? '' : '<br>' }<button class="code-text code-text-minified"` +
+				` data-songdata='${ songData }' code-length="${ this.formatBytes(codeMinified.length) }">${
+					this.escapeHTML(codeMinified) }</button>`;
 		}
-		if(fileForm) {
-			str += `<button class="code-button code-load" data-type="formatted"${ sData } data-code-file="${
-				hash }.js">format ${ formatBytes(codeFormLen) }</button>`;
+		if(children) {
+			let childrenStr = '';
+			const len = children.length;
+			if(len > 8) {
+				childrenStr += `<details><summary class="code-button children-toggle">${
+					len - 5 } more bytebeats</summary>`;
+				for(let i = 0; i < len; ++i) {
+					if(i === len - 5) {
+						childrenStr += '</details>';
+					}
+					childrenStr += this.generateLibraryEntry(children[i]);
+				}
+			} else {
+				for(let i = 0; i < len; ++i) {
+					childrenStr += this.generateLibraryEntry(children[i]);
+				}
+			}
+			entry += `<div class="entry-children">${ childrenStr }</div>`;
 		}
-		str += '</div>';
-		if(codeMin) {
-			str += `<button class="code-text code-text-min"${ sData }>${ this.escapeHTML(codeMin) }</button>`;
-		}
-		if(code) {
-			str += `<button class="code-text code-text-orig${ codeMin ? ' hidden' : '' }"${
-				sData }>${ this.escapeHTML(code) }</button>`;
-		}
-		return `<div class="entry${ rating ? ' star-' + rating : '' }">${ str }</div>`;
+		return `<div class="${ codeOriginal || codeMinified || file || children ? 'entry' : 'entry-text' }${
+			starred ? ' ' + ['star-1', 'star-2'][starred - 1] : '' }">${ entry }</div>`;
 	}
 	getColor(value) {
 		return [
