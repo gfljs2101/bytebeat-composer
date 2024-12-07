@@ -323,11 +323,39 @@ globalThis.bytebeat = new class {
 	const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
 	return (i ? (bytes / (1024 ** i)).toFixed(2) : bytes) + ['B', 'KB', 'MB', 'GB', 'TB'][i];
 }
-	generateLibraryEntry({
-		author, children, codeMinified, codeOriginal, cover, date, description, drawing, file, fileFormatted,
-		fileMinified, fileOriginal, mode, name, remix, sampleRate, starred, stereo, url
-	}) {
-		let entry = '';
+	generateEntryHTML({
+		author, code, codeFormLen, codeLen, codeMin, codeMinLen, coverName, coverUrl, date, description,
+		drawing, fileForm, fileMin, fileOrig, hash, mode, name, rating, remix, sampleRate, songs, stereo,
+		tags, url
+	}, libName) {
+		const notAllLib = libName !== 'all';
+		if(songs) {
+			let songsStr = '';
+			const len = songs.length;
+			const maxVisible = 10;
+			const needToHide = len - maxVisible;
+			if(notAllLib && len > maxVisible + 3) {
+				songsStr += `<details><summary class="code-button songs-toggle">${
+					needToHide } more bytebeats</summary>`;
+				for(let i = 0; i < len; ++i) {
+					if(i === needToHide) {
+						songsStr += '</details>';
+					}
+					songsStr += this.generateEntryHTML(songs[i], libName);
+				}
+			} else {
+				for(let i = 0; i < len; ++i) {
+					songsStr += this.generateEntryHTML(songs[i], libName);
+				}
+			}
+			return `<details class="songs-block"${
+				notAllLib || this.settings.showAllSongs ? ' open' : ''
+			}><summary class="songs-header"> <b>${ author }</b>${
+				author === 'SthephanShi' ? '<small style="color: #ff0;">dollchan creator</small>' : '' }${
+				len ? `<small> ${ len } song${ len > 1 ? 's' : '' }</small>` : ''
+			}</summary><div class="songs">${ songsStr }</div></details>`;
+		}
+		let str = '';
 		const noArrayUrl = url && !Array.isArray(url);
 		if(name) {
 			entry += url ? `<a href="${ noArrayUrl ? url : url[0] }" target="_blank">${ name }</a>` : name;
