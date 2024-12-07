@@ -411,16 +411,19 @@ globalThis.bytebeat = new class {
 		if(file) {
 			let codeBtn = '';
 			if(fileFormatted) {
-				codeBtn += `<button class="code-button code-load" data-type="formatted"${ sData } data-code-file="${
-				hash }.js">format ${ codeFormLen }B</button>`;
+				codeBtn += `<button class="code-button code-load code-load-formatted" data-songdata='${
+					songData }' data-code-file="${ file
+				}" title="Click to load and play the formatted code">formatted</button>`;
 			}
 			if(fileOriginal) {
-				codeBtn += `<button class="code-button code-load" data-type="original"${ sData }${
-				fileOrig ? `data-code-file="${ hash }.js"` : '' }>orig ${ codeLen }B</button>`;
+				codeBtn += `<button class="code-button code-load code-load-original" data-songdata='${
+					songData }' data-code-file="${ file
+				}" title="Click to load and play the original code">original</button>`;
 			}
 			if(fileMinified) {
-				codeBtn += `<button class="code-button code-load" data-type="minified"${ sData }${
-				fileMin ? ` data-code-file="${ hash }.js"` : '' }>min ${ codeMinLen }B</button>`;
+				codeBtn += `<button class="code-button code-load code-load-minified" data-songdata='${
+					songData }' data-code-file="${ file
+				}" title="Click to load and play the minified code">minified</button>`;
 			}
 			if(codeBtn) {
 				entry += `<div class="code-buttons-container">${ codeBtn }</div>`;
