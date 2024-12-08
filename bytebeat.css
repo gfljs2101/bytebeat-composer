@@ -613,6 +613,10 @@ button[name="close"] {
 	border-left: none;
 }
 
+.code-stereo {
+	color: #008040;
+}
+
 .code-tags {
 	color: var(--code-tags);
 }
