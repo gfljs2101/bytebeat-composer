@@ -332,7 +332,7 @@ globalThis.bytebeat = new class {
 		return bytes + 'B';
 	}
 	const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
-	return (i ? (bytes / (1024 ** i)).toFixed(2) : bytes) + ['B', 'KB', 'MB', 'GB', 'TB'][i];
+	return (i ? (bytes / (1024 ** i)).toFixed(2) : bytes) + ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'][i];
 }
 	generateLibraryEntry({
 		author, children, codeMinified, codeOriginal, cover, date, description, drawing, file, fileFormatted,
