@@ -46,7 +46,7 @@
     });
 
     // Fetch library folders from the server
-    fetch('/get-library')
+    fetch('./library')
       .then(response => response.json())
       .then(folders => {
         displayLibrary(folders);
@@ -61,7 +61,7 @@
         listItem.textContent = folder;
         listItem.addEventListener('click', () => {
           // Fetch folder details (you'll need to implement this)
-          fetch(`/get-folder-details/${folder}`) 
+          fetch(`./${folder}`) 
             .then(response => response.json())
             .then(folderDetails => {
               displayFolderDetails(folderDetails);
