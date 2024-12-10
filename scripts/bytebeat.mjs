@@ -419,21 +419,22 @@ globalThis.bytebeat = new class {
 		} else if(codeOriginal) {
 			entry += ` <span class="code-length" title="Size in characters">${ this.formatBytes(codeOriginal.length) }</span>`;
 		}
+		const fileData = file ? (songObj) : '';
 		if(file) {
 			let codeBtn = '';
 			if(fileFormatted) {
 				codeBtn += `<button class="code-button code-load code-load-formatted" data-songdata='${
-					songData }' data-code-file="${ file
+					fileData }' data-code-file="${ file
 				}" title="Click to load and play the formatted code">format ${this.formatBytes(songData.length) }</button>`;
 			}
 			if(fileOriginal) {
 				codeBtn += `<button class="code-button code-load code-load-original" data-songdata='${
-					songData }' data-code-file="${ file
+					fileData }' data-code-file="${ file
 				}" title="Click to load and play the original code">orig ${this.formatBytes(songData.length) }</button>`;
 			}
 			if(fileMinified) {
 				codeBtn += `<button class="code-button code-load code-load-minified" data-songdata='${
-					songData }' data-code-file="${ file
+					fileData }' data-code-file="${ file
 				}" title="Click to load and play the minified code">min ${this.formatBytes(songData.length) }</button>`;
 			}
 			if(codeBtn) {
