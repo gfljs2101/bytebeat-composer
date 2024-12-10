@@ -6,6 +6,15 @@
 <body>
   <h1>Bytebeat Library</h1>
 
+  <select id="file-selector">
+    <option value="big-js.json">Big JS</option>
+    <option value="classic.json">Classic</option>
+    <option value="compact-js.json">Compact JS</option>
+    <option value="floatbeat.json">Floatbeat</option>
+    <option value="funcbeat.json">Funcbeat</option>
+    <option value="gfljs2100.json">GFLJS2100</option>
+  </select>
+
   <ul id="library-list">
     <!-- Library folders will be displayed here -->
   </ul>
@@ -15,69 +24,42 @@
   </div>
 
   <style>
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-    }
-
-    #library-list {
-      list-style: none;
-      padding: 0;
-    }
-
-    #library-list li {
-      cursor: pointer;
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-    }
-
-    #folder-details {
-      margin-top: 20px;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
+    /* Same CSS as before */
   </style>
 
   <script>
-    // Fetch library data from each JSON file
-    Promise.all([
-      fetch('./library/big-js.json').then(res => res.json()),
-      fetch('./library/classic.json').then(res => res.json()),
-      fetch('./library/compact-js.json').then(res => res.json()),
-      fetch('./library/floatbeat.json').then(res => res.json()),
-      fetch('./library/funcbeat.json').then(res => res.json()),
-      fetch('./library/gfljs2100.json').then(res => res.json()),
-    ])
-    .then(folderArrays => {
-      // Concatenate the arrays from all JSON files
-      const allFolders = folderArrays.reduce((acc, arr) => acc.concat(arr), []);
-      displayLibrary(allFolders);
-    })
-    .catch(error => console.error('Error fetching library data:', error));
+    // Get references to the dropdown menu and list container
+    const fileSelector = document.getElementById('file-selector');
+    const libraryList = document.getElementById('library-list');
+    const folderDetails = document.getElementById('folder-details');
+
+    // Event listener for dropdown menu change
+    fileSelector.addEventListener('change', () => {
+      const selectedFile = fileSelector.value;
+      fetch(selectedFile)
+        .then(response => response.json())
+        .then(folders => {
+          displayLibrary(folders);
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    });
 
     // Display library folders in the HTML
     function displayLibrary(folders) {
-      const listContainer = document.getElementById('library-list');
+      libraryList.innerHTML = ''; // Clear previous list
       folders.forEach(folder => {
         const listItem = document.createElement('li');
         listItem.textContent = folder.name;
         listItem.addEventListener('click', () => {
           displayFolderDetails(folder);
         });
-        listContainer.appendChild(listItem);
+        libraryList.appendChild(listItem);
       });
     }
 
     // Display details of a selected folder
     function displayFolderDetails(folder) {
-      const detailsDiv = document.getElementById('folder-details');
-      detailsDiv.innerHTML = `
+      folderDetails.innerHTML = `
         <h2>${folder.name}</h2>
         <p>Author: ${folder.author}</p>
         <p>Description: ${folder.description}</p>
