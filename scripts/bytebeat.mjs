@@ -419,6 +419,7 @@ globalThis.bytebeat = new class {
 		} else if(codeOriginal) {
 			entry += ` <span class="code-length" title="Size in characters">${ this.formatBytes(codeOriginal.length) }</span>`;
 		}
+		const songData = fileFormatted || fileOriginal || fileMinified || file ? JSON.stringify(songObj) : '';
 		if(file) {
 			let codeBtn = '';
 			if(fileFormatted) {
