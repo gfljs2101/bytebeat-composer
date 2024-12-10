@@ -1,75 +1,254 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Bytebeat Library Manager</title>
-  <style>
-    /* Add your CSS here */
-  </style>
+<html><head><base href="/" />
+<title>Bytebeat Library Manager</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #1a1a1a;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: #2a2a2a;
+    border-radius: 8px;
+    padding: 15px;
+    transition: transform 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  .filters {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  select, input {
+    background: #333;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 8px;
+    border-radius: 4px;
+  }
+  .starred {
+    color: gold;
+  }
+  .metadata {
+    font-size: 0.9em;
+    color: #aaa;
+    margin: 5px 0;
+  }
+  pre {
+    background: #333;
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 0.85em;
+  }
+</style>
 </head>
 <body>
-  <h1>Bytebeat Library</h1>
+<h1>Bytebeat Library Manager</h1>
 
-  <select id="file-selector">
-    <option value="big-js.json">Big JS</option>
-    <option value="classic.json">Classic</option>
-    <option value="compact-js.json">Compact JS</option>
-    <option value="floatbeat.json">Floatbeat</option>
-    <option value="funcbeat.json">Funcbeat</option>
-    <option value="gfljs2100.json">GFLJS2100</option>
+<div class="filters">
+  <input type="text" id="search" placeholder="Search by name or author">
+  <select id="modeFilter">
+    <option value="">All Modes</option>
   </select>
+  <select id="sortBy">
+    <option value="date">Sort by Date</option>
+    <option value="name">Sort by Name</option>
+    <option value="author">Sort by Author</option>
+  </select>
+  <label>
+    <input type="checkbox" id="starredOnly"> Show Starred Only
+  </label>
+</div>
 
-  <div id="folder-details">
-    <!-- Folder details will be displayed here -->
-  </div>
+<div id="grid" class="grid"></div>
 
-  <script>
-    const fileSelector = document.getElementById('file-selector');
-    const folderDetails = document.getElementById('folder-details');
+<script>
+const express = require('express');
+const fs = require('fs');
+const app = express();
+const port = 3000;
 
-    // Event listener for dropdown menu change
-    fileSelector.addEventListener('change', () => {
-      const selectedFile = fileSelector.value;
-
-      // Fetch the JSON file data
-      fetch(`./library/${selectedFile}`)
-        .then(response => response.json())
-        .then(data => {
-          displayFolderDetails(data); 
-        })
-        .catch(error => console.error('Error fetching data:', error));
-    });
-
-    // Fetch library folders from the server
-    fetch('/get-library')
-      .then(response => response.json())
-      .then(folders => {
-        // Assuming you only want to display the first folder
-        if (folders.length > 0) {
-          const firstFolder = folders[0];
-          // Fetch folder details (you'll need to implement this)
-          // fetch(`/get-folder-details/${firstFolder}`) 
-          //   .then(response => response.json())
-          //   .then(folderDetails => {
-          //     displayFolderDetails(folderDetails);
-          //   })
-          //   .catch(error => console.error('Error fetching folder details:', error));
-        }
-      })
-      .catch(error => console.error('Error fetching data:', error));
-
-    // Display details of a selected folder
-    function displayFolderDetails(folder) {
-      // Implement this to display the details from the fetched JSON
-      folderDetails.innerHTML = `
-        <h2>${folder.name}</h2>
-        <p>Author: ${folder.author}</p>
-        <p>Description: ${folder.description}</p>
-        <p>Mode: ${folder.mode}</p>
-        <p>Sample Rate: ${folder.sampleRate}</p>
-        <p>Code: ${folder.codeOriginal}</p>
-        <!-- Add other details as needed -->
-      `;
+// Function to load and merge all JSON files
+function loadLibrary() {
+  const files = [
+    './library/big-js.json',
+    './library/classic.json',
+    './library/compact-js.json',
+    './library/floatbeat.json',
+    './library/funcbeat.json',
+    './library/gfljs2100.json'
+  ];
+  
+  let allEntries = [];
+  
+  files.forEach(file => {
+    try {
+      const data = fs.readFileSync(file, 'utf8');
+      const entries = JSON.parse(data);
+      allEntries = allEntries.concat(entries);
+    } catch (err) {
+      console.error(`Error reading ${file}:`, err);
     }
-  </script>
-</body>
-</html>
+  });
+  
+  return allEntries;
+}
+
+// Initialize library
+let library = loadLibrary();
+
+// Route to get all entries
+app.get('/api/entries', (req, res) => {
+  res.json(library);
+});
+
+// Route to get filtered entries
+app.get('/api/entries/filter', (req, res) => {
+  let filtered = [...library];
+  
+  if (req.query.search) {
+    const search = req.query.search.toLowerCase();
+    filtered = filtered.filter(entry => 
+      entry.name.toLowerCase().includes(search) ||
+      (entry.author && entry.author.toLowerCase().includes(search))
+    );
+  }
+  
+  if (req.query.mode) {
+    filtered = filtered.filter(entry => entry.mode === req.query.mode);
+  }
+  
+  if (req.query.starred === 'true') {
+    filtered = filtered.filter(entry => entry.starred);
+  }
+  
+  if (req.query.sortBy) {
+    filtered.sort((a, b) => {
+      switch(req.query.sortBy) {
+        case 'date':
+          return new Date(b.date) - new Date(a.date);
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'author':
+          return (a.author || '').localeCompare(b.author || '');
+        default:
+          return 0;
+      }
+    });
+  }
+  
+  res.json(filtered);
+});
+
+// Route to toggle starred status
+app.put('/api/entries/:id/star', (req, res) => {
+  const entry = library.find(e => e.file === req.params.id);
+  if (entry) {
+    entry.starred = !entry.starred;
+    res.json({ starred: entry.starred });
+  } else {
+    res.status(404).json({ error: 'Entry not found' });
+  }
+});
+
+// Start server
+app.listen(port, () => {
+  console.log(`Bytebeat Library Manager running on port ${port}`);
+});
+
+// Frontend code
+document.addEventListener('DOMContentLoaded', () => {
+  let currentLibrary = [];
+  
+  async function loadEntries() {
+    const response = await fetch('/api/entries');
+    currentLibrary = await response.json();
+    updateUI();
+    populateModeFilter();
+  }
+  
+  function populateModeFilter() {
+    const modes = new Set(currentLibrary.map(entry => entry.mode).filter(Boolean));
+    const select = document.getElementById('modeFilter');
+    modes.forEach(mode => {
+      const option = document.createElement('option');
+      option.value = mode;
+      option.textContent = mode;
+      select.appendChild(option);
+    });
+  }
+  
+  function createCard(entry) {
+    return `
+      <div class="card">
+        <h3>
+          ${entry.name}
+          <span class="star-toggle ${entry.starred ? 'starred' : ''}" 
+                data-id="${entry.file}">
+            ★
+          </span>
+        </h3>
+        <div class="metadata">
+          ${entry.author ? `<div>Author: ${entry.author}</div>` : ''}
+          ${entry.date ? `<div>Date: ${new Date(entry.date).toLocaleDateString()}</div>` : ''}
+          ${entry.mode ? `<div>Mode: ${entry.mode}</div>` : ''}
+        </div>
+        ${entry.description ? `<p>${entry.description}</p>` : ''}
+        <pre>${entry.codeOriginal || entry.codeMinified || 'No code available'}</pre>
+      </div>
+    `;
+  }
+  
+  async function updateUI() {
+    const search = document.getElementById('search').value;
+    const mode = document.getElementById('modeFilter').value;
+    const sortBy = document.getElementById('sortBy').value;
+    const starredOnly = document.getElementById('starredOnly').checked;
+    
+    const params = new URLSearchParams({
+      search,
+      mode,
+      sortBy,
+      starred: starredOnly
+    });
+    
+    const response = await fetch(`/api/entries/filter?${params}`);
+    const filtered = await response.json();
+    
+    const grid = document.getElementById('grid');
+    grid.innerHTML = filtered.map(createCard).join('');
+    
+    // Add event listeners for star toggles
+    document.querySelectorAll('.star-toggle').forEach(star => {
+      star.addEventListener('click', async (e) => {
+        const id = e.target.dataset.id;
+        const response = await fetch(`/api/entries/${id}/star`, {
+          method: 'PUT'
+        });
+        const result = await response.json();
+        e.target.classList.toggle('starred', result.starred);
+      });
+    });
+  }
+  
+  // Event listeners
+  document.getElementById('search').addEventListener('input', updateUI);
+  document.getElementById('modeFilter').addEventListener('change', updateUI);
+  document.getElementById('sortBy').addEventListener('change', updateUI);
+  document.getElementById('starredOnly').addEventListener('change', updateUI);
+  
+  // Initial load
+  loadEntries();
+});
+</script>
+</body></html>
