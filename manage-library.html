@@ -2,6 +2,9 @@
 <html>
 <head>
   <title>Bytebeat Library Manager</title>
+  <style>
+    /* Add your CSS here */
+  </style>
 </head>
 <body>
   <h1>Bytebeat Library</h1>
@@ -15,21 +18,12 @@
     <option value="gfljs2100.json">GFLJS2100</option>
   </select>
 
-  <ul id="library-list">
-    <!-- Library folders will be displayed here -->
-  </ul>
-
   <div id="folder-details">
     <!-- Folder details will be displayed here -->
   </div>
 
-  <style>
-    /* Same CSS as before */
-  </style>
-
   <script>
     const fileSelector = document.getElementById('file-selector');
-    const libraryList = document.getElementById('library-list');
     const folderDetails = document.getElementById('folder-details');
 
     // Event listener for dropdown menu change
@@ -37,40 +31,13 @@
       const selectedFile = fileSelector.value;
 
       // Fetch the JSON file data
-      fetch(`/get-json/${selectedFile}`)
+      fetch(`./library/${selectedFile}`)
         .then(response => response.json())
-        .then(folders => {
-          displayLibrary(folders);
+        .then(data => {
+          displayFolderDetails(data); 
         })
         .catch(error => console.error('Error fetching data:', error));
     });
-
-    // Fetch library folders from the server
-    fetch('./library')
-      .then(response => response.json())
-      .then(folders => {
-        displayLibrary(folders);
-      })
-      .catch(error => console.error('Error fetching data:', error));
-
-    // Display library folders in the HTML
-    function displayLibrary(folders) {
-      libraryList.innerHTML = ''; // Clear previous list
-      folders.forEach(folder => {
-        const listItem = document.createElement('li');
-        listItem.textContent = folder;
-        listItem.addEventListener('click', () => {
-          // Fetch folder details (you'll need to implement this)
-          fetch(`./${folder}`) 
-            .then(response => response.json())
-            .then(folderDetails => {
-              displayFolderDetails(folderDetails);
-            })
-            .catch(error => console.error('Error fetching folder details:', error));
-        });
-        libraryList.appendChild(listItem);
-      });
-    }
 
     // Display details of a selected folder
     function displayFolderDetails(folder) {
