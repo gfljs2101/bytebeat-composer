@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bytebeat Library Manager</title>
+</head>
+<body>
+  <h1>Bytebeat Library</h1>
+
+  <ul id="library-list">
+    <!-- Library folders will be displayed here -->
+  </ul>
+
+  <div id="folder-details">
+    <!-- Folder details will be displayed here -->
+  </div>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #library-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    #library-list li {
+      cursor: pointer;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    #folder-details {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  </style>
+
+  <script>
+    // Fetch library data
+    fetch('/get-library')
+      .then(response => response.json())
+      .then(folders => {
+        displayLibrary(folders);
+      })
+      .catch(error => console.error('Error fetching library data:', error));
+
+    // Display library folders in the HTML
+    function displayLibrary(folders) {
+      const listContainer = document.getElementById('library-list');
+      folders.forEach(folder => {
+        const listItem = document.createElement('li');
+        listItem.textContent = folder.name;
+        listItem.addEventListener('click', () => {
+          displayFolderDetails(folder);
+        });
+        listContainer.appendChild(listItem);
+      });
+    }
+
+    // Display details of a selected folder
+    function displayFolderDetails(folder) {
+      const detailsDiv = document.getElementById('folder-details');
+      detailsDiv.innerHTML = `
+        <h2>${folder.name}</h2>
+        <p>Author: ${folder.author}</p>
+        <p>Description: ${folder.description}</p>
+        <p>Mode: ${folder.mode}</p>
+        <p>Sample Rate: ${folder.sampleRate}</p>
+        <p>Code: ${folder.codeOriginal}</p>
+        <!-- Add other details as needed -->
+      `;
+    }
+  </script>
+</body>
+</html>
