@@ -28,7 +28,6 @@
   </style>
 
   <script>
-    // Get references to the dropdown menu and list container
     const fileSelector = document.getElementById('file-selector');
     const libraryList = document.getElementById('library-list');
     const folderDetails = document.getElementById('folder-details');
@@ -36,7 +35,9 @@
     // Event listener for dropdown menu change
     fileSelector.addEventListener('change', () => {
       const selectedFile = fileSelector.value;
-      fetch(selectedFile)
+
+      // Fetch the JSON file data
+      fetch(`/get-json/${selectedFile}`)
         .then(response => response.json())
         .then(folders => {
           displayLibrary(folders);
@@ -44,14 +45,28 @@
         .catch(error => console.error('Error fetching data:', error));
     });
 
+    // Fetch library folders from the server
+    fetch('/get-library')
+      .then(response => response.json())
+      .then(folders => {
+        displayLibrary(folders);
+      })
+      .catch(error => console.error('Error fetching data:', error));
+
     // Display library folders in the HTML
     function displayLibrary(folders) {
       libraryList.innerHTML = ''; // Clear previous list
       folders.forEach(folder => {
         const listItem = document.createElement('li');
-        listItem.textContent = folder.name;
+        listItem.textContent = folder;
         listItem.addEventListener('click', () => {
-          displayFolderDetails(folder);
+          // Fetch folder details (you'll need to implement this)
+          fetch(`/get-folder-details/${folder}`) 
+            .then(response => response.json())
+            .then(folderDetails => {
+              displayFolderDetails(folderDetails);
+            })
+            .catch(error => console.error('Error fetching folder details:', error));
         });
         libraryList.appendChild(listItem);
       });
@@ -59,6 +74,7 @@
 
     // Display details of a selected folder
     function displayFolderDetails(folder) {
+      // Implement this to display the details from the fetched JSON
       folderDetails.innerHTML = `
         <h2>${folder.name}</h2>
         <p>Author: ${folder.author}</p>
