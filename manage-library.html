@@ -46,7 +46,7 @@
 
   <script>
     // Fetch library data
-    fetch('/get-library')
+    fetch('./library')
       .then(response => response.json())
       .then(folders => {
         displayLibrary(folders);
