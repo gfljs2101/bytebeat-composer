@@ -163,5 +163,12 @@
 					"name": "Modem melody"
 				},
 				"sampleRate": 44100
+			},
+			{
+				"name": "Binary look",
+				"codeOriginal": "1.999*((t>>t/16)/32&128)",
+				"date": "2024-12-10",
+				"drawing": { "mode": "Diagram", "scale": 0 },
+				"sampleRate": 44100
 			}
 ]
