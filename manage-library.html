@@ -47,12 +47,12 @@
   <script>
     // Fetch library data from each JSON file
     Promise.all([
-      fetch('.library/big-js.json').then(res => res.json()),
-      fetch('.library/classic.json').then(res => res.json()),
-      fetch('.library/compact-js.json').then(res => res.json()),
-      fetch('.library/floatbeat.json').then(res => res.json()),
-      fetch('.library/funcbeat.json').then(res => res.json()),
-      fetch('.library/gfljs2100.json').then(res => res.json()),
+      fetch('./library/big-js.json').then(res => res.json()),
+      fetch('./library/classic.json').then(res => res.json()),
+      fetch('./library/compact-js.json').then(res => res.json()),
+      fetch('./library/floatbeat.json').then(res => res.json()),
+      fetch('./library/funcbeat.json').then(res => res.json()),
+      fetch('./library/gfljs2100.json').then(res => res.json()),
     ])
     .then(folderArrays => {
       // Concatenate the arrays from all JSON files
