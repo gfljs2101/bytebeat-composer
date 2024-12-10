@@ -153,5 +153,15 @@
 				"date": "2024-12-04",
 				"fileOriginal": true,
 				"sampleRate": 22050
+			},
+			{
+				"name": "Modem melody dubstep",
+				"codeOriginal": "(((t&t>>12|(t/(t&t>>12))/4|t&t>>14)+t/(t&t>>12)/64)^t/(t&t>>12)/16)",
+				"date": "2024-12-10",
+				"remix": {
+					"author": "krcko",
+					"name": "Modem melody"
+				},
+				"sampleRate": 44100
 			}
 ]
