@@ -53,7 +53,7 @@ globalThis.bytebeat = new class {
 		this.colorDiagram = null;
 		this.colorWaveform = null;
 		this.defaultSettings = {
-			codeStyle: 'Atom Dark',
+			codeStyle: 'GFLJS2100',
 			colorDiagram: '#ffa200',
 			colorStereo: 1,
 			colorTimeCursor: '#fbff00',
