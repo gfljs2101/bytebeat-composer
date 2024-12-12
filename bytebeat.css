@@ -271,6 +271,20 @@ html[data-theme="Dollchan"] {
 	--code-variable: #9de;
 }
 
+#editor-container[data-theme="GFLJS2100"] {
+	--code-comment: #a88b32;
+	--code-definition: #a9ee99;
+	--code-font: Arial;
+	--code-keyword: #ff9900;
+	--code-number: #e691cc;
+	--code-operator: #91e6d2;
+	--code-property: #91e6a6;
+	--code-punctuation: #91e6d2;
+	--code-string: #dee691;
+	--code-string2: #91e3e6;
+	--code-variable: #91cce6;
+}
+
 /* ==[ Common ] =========================================================================================== */
 
 html {
