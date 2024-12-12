@@ -72,7 +72,7 @@ globalThis.bytebeat = new class {
 		this.isNeedClear = false;
 		this.isPlaying = false;
 		this.isRecording = false;
-		this.playbackSpeed = this.playbackSpeed = 1;
+		this.playbackSpeed = 1;
 		this.settings = this.defaultSettings;
 		this.songData = { mode: 'Bytebeat', sampleRate: 8000 };
 		this.init();
@@ -724,6 +724,7 @@ globalThis.bytebeat = new class {
 			sampleRatio: this.songData.sampleRate / this.audioCtx.sampleRate
 		};
 		if(isPlay) {
+			data.playbackSpeed = this.playbackSpeed = 1;
 			this.playbackToggle(true, false);
 			data.resetTime = true;
 			data.isPlaying = isPlay;
