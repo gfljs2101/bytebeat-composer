@@ -379,14 +379,15 @@ globalThis.bytebeat = new class {
 			})</span>`;
 		}
 		if(remix) {
-			for(let i = 0, len = remix.length; i < len; ++i) {
-				const { hash: rHash, url: rUrl, name: rName, author: rAuthor } = remix[i];
-				str += '<div class="code-remix"><div class="code-remix-preview"> remix of ' +
-					`<button class="code-button code-remix-load" data-hash="${
-						rHash }" title="Show detailed source information">&gt;</button> <span>${
-						rUrl ? `<a href="${ rUrl }" target="_blank">${ rName || rAuthor }</a>` :
-						`"${ rName }"` }${ rName && rAuthor ? ' by ' + rAuthor : '' }</span></div></div>`;
+			const arr = [];
+			const remixArr = Array.isArray(remix) ? remix : [remix];
+			for(let i = 0, len = remixArr.length; i < len; ++i) {
+				const { url: rUrl, name: remixName, author: rAuthor } = remixArr[i];
+				arr.push(`${ rUrl ? `<a href="${ rUrl }" target="_blank">${
+					remixName || rAuthor }</a>` : `"${ remixName }"`
+				}${ remixName && rAuthor ? ' by ' + rAuthor : '' }`);
 			}
+			entry += ` <span class="code-remix">(remix of ${ arr.join(', ') })</span>`;
 		}
 
 		if(date || sampleRate || mode || stereo || drawing) {
