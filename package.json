@@ -1,0 +1,37 @@
+{
+	"name": "GFLJBeat3",
+	"version": "1",
+	"author": "GFLJS2100",
+	"description": "Bytebeat player with playlist that contains many interesting formulas from the Internet",
+	"homepage": "https://gfljbeat3.pages.dev/",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/gfljs2100-user3/GFLJBeat3.git"
+	},
+	"bugs": {
+		"url": "https://github.com/gfljs2100-user3/GFLJBeat3/issues"
+	},
+	"scripts": {
+		"start": "rollup -c"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.10.0",
+		"@rollup/plugin-node-resolve": "^15.3.0",
+		"@rollup/plugin-terser": "^0.4.4",
+		"eslint": "^9.12.0",
+		"globals": "^15.11.0",
+		"rollup": "^4.24.0"
+	},
+	"dependencies": {
+		"@codemirror/autocomplete": "^6.18.1",
+		"@codemirror/commands": "^6.7.0",
+		"@codemirror/lang-javascript": "^6.2.2",
+		"@codemirror/language": "^6.10.3",
+		"@codemirror/search": "^6.5.6",
+		"@codemirror/state": "^6.4.1",
+		"@codemirror/view": "^6.34.1",
+		"@lezer/highlight": "^1.2.1",
+		"pako": "^2.1.0"
+	}
+}
