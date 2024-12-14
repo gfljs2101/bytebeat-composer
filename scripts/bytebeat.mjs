@@ -387,7 +387,11 @@ globalThis.bytebeat = new class {
 					remixName || rAuthor }</a>` : `"${ remixName }"`
 				}${ remixName && rAuthor ? ' by ' + rAuthor : '' }`);
 			}
-			entry += ` <span class="code-remix">(remix of ${ arr.join(', ') })</span>`;
+			entry += ` <span class="code-remix">(remix of ${ arr.join(', ') })</span>
+   				   <button class="code-button code-remix-load" data-hash="${
+						rHash }" title="Show detailed source information">&gt;</button> <span>${
+						rUrl ? `<a href="${ rUrl }" target="_blank">${ rName || rAuthor }</a>` :
+						`"${ rName }"` }${ rName && rAuthor ? ' by ' + rAuthor : '' }</span></div></div>`;
 		}
 
 		if(date || sampleRate || mode || stereo || drawing) {
